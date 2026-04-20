@@ -1,0 +1,221 @@
+@import "tailwindcss";
+@plugin "daisyui" {
+  themes: light --default, dark;
+}
+
+/* ===== Custom Design Tokens ===== */
+:root {
+  --walmart-blue: #0071dc;
+  --walmart-dark: #004c91;
+  --walmart-yellow: #ffc220;
+  --walmart-green: #1a8917;
+  --gradient-primary: linear-gradient(135deg, #0071dc 0%, #004c91 100%);
+  --gradient-accent: linear-gradient(135deg, #ffc220 0%, #f59e0b 100%);
+}
+
+/* ===== Base Styles ===== */
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background-color: #f5f5f5;
+    color: #1a1a2e;
+    line-height: 1.6;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #a1a1a1;
+  }
+}
+
+/* ===== Utility Classes ===== */
+@layer utilities {
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+
+  .gradient-accent {
+    background: var(--gradient-accent);
+  }
+
+  .text-walmart-blue {
+    color: var(--walmart-blue);
+  }
+
+  .bg-walmart-blue {
+    background-color: var(--walmart-blue);
+  }
+
+  .bg-walmart-dark {
+    background-color: var(--walmart-dark);
+  }
+
+  .bg-walmart-yellow {
+    background-color: var(--walmart-yellow);
+  }
+
+  /* Glass effect */
+  .glass {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  /* Shimmer animation for skeleton loaders */
+  .shimmer {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* Fade in animation */
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Slide up animation */
+  .animate-slide-up {
+    animation: slideUp 0.4s ease-out;
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Bounce in */
+  .animate-bounce-in {
+    animation: bounceIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  @keyframes bounceIn {
+    0% { transform: scale(0.3); opacity: 0; }
+    50% { transform: scale(1.05); }
+    70% { transform: scale(0.9); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  /* Pulse ring */
+  .pulse-ring {
+    animation: pulseRing 1.5s infinite;
+  }
+
+  @keyframes pulseRing {
+    0% { box-shadow: 0 0 0 0 rgba(0, 113, 220, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(0, 113, 220, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(0, 113, 220, 0); }
+  }
+
+  /* Line clamp utilities */
+  .line-clamp-1 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+  }
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  /* Marquee Animation */
+  .animate-marquee {
+    animation: marquee 30s linear infinite;
+  }
+
+  @keyframes marquee {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+  }
+}
+
+/* ===== Component Styles ===== */
+@layer components {
+  .btn-walmart {
+    background: var(--gradient-primary);
+    color: white;
+    padding: 0.625rem 1.5rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+  }
+  .btn-walmart:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(0, 113, 220, 0.35);
+  }
+  .btn-walmart:active {
+    transform: translateY(0);
+  }
+
+  .card-hover {
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+  }
+
+  .input-primary {
+    border: 2px solid #e5e7eb;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+    font-size: 0.95rem;
+    outline: none;
+  }
+  .input-primary:focus {
+    border-color: var(--walmart-blue);
+    box-shadow: 0 0 0 3px rgba(0, 113, 220, 0.1);
+  }
+
+  .badge-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: capitalize;
+  }
+}
