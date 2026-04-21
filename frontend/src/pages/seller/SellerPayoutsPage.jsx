@@ -27,25 +27,44 @@ const SellerPayoutsPage = () => {
 
   const fetchData = async () => {
     try {
-      const [payoutsRes, statsRes] = await Promise.all([
-        api.get('/payouts/my-payouts'),
-        api.get('/seller/dashboard') 
+      const [payoutsRes, profileRes] = await Promise.all([
+        api.get('/payouts/my'),
+        api.get('/seller/profile') 
       ]);
       
       setPayouts(payoutsRes.data?.data || []);
+      const seller = profileRes.data?.data || {};
       
-      // The dashboard endpoint returns { seller, stats, recentOrders }
-      const sellerData = statsRes.data?.data?.seller || {};
-      const totalRev = sellerData.totalRevenue || 0;
-      const paidAmt = sellerData.paidAmount || 0;
-
       setStats({
-        totalRevenue: totalRev,
-        paidAmount: paidAmt,
-        pendingBalance: Math.max(0, totalRev - paidAmt)
+        totalRevenue: seller.totalRevenue || 0,
+        paidAmount: seller.paidAmount || 0,
+        currentBalance: seller.currentBalance || 0
       });
     } catch (err) {
-      toast.error('Failed to load payouts history');
+      toast.error('Failed to load financial records');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const requestWithdrawal = async () => {
+    if (stats.currentBalance < 500) {
+      return toast.error('Minimum withdrawal amount is ₹500');
+    }
+
+    const confirmRequest = window.confirm(`Request payout for ${formatCurrency(stats.currentBalance)}?`);
+    if (!confirmRequest) return;
+
+    try {
+      setIsLoading(true);
+      await api.post('/payouts/request', {
+        amount: stats.currentBalance,
+        paymentMethod: 'bank_transfer' // Defaulting for simple flow
+      });
+      toast.success('Withdrawal request submitted!');
+      fetchData();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to submit request');
     } finally {
       setIsLoading(false);
     }
@@ -56,7 +75,8 @@ const SellerPayoutsPage = () => {
       completed: 'bg-green-100 text-green-700',
       pending: 'bg-amber-100 text-amber-700',
       processing: 'bg-blue-100 text-blue-700',
-      failed: 'bg-red-100 text-red-700'
+      failed: 'bg-red-100 text-red-700',
+      rejected: 'bg-red-100 text-red-700'
     };
     return <span className={`px-2.5 py-1 text-xs rounded-full font-bold uppercase tracking-wider ${map[status]}`}>{status}</span>;
   };
@@ -81,16 +101,27 @@ const SellerPayoutsPage = () => {
            <h3 className="text-2xl font-black text-slate-800">{formatCurrency(stats.totalRevenue)}</h3>
            <p className="text-[10px] text-slate-400 mt-2">Gross revenue before cancellations</p>
         </div>
-        <div className="bg-slate-900 p-6 rounded-2xl shadow-xl shadow-slate-200 relative overflow-hidden">
-           <div className="absolute right-0 top-0 opacity-10"><CreditCard size={100} /></div>
-           <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Withdrawable Balance</p>
-           <h3 className="text-2xl font-black text-white">{formatCurrency(stats.pendingBalance)}</h3>
-           <p className="text-[10px] text-white/50 mt-2">Settled amount available for payout</p>
+        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative group overflow-hidden">
+           <div className="absolute right-0 top-0 opacity-10 group-hover:scale-110 transition-transform"><CreditCard size={100} /></div>
+           <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 text-left">Withdrawable Balance</p>
+           <div className="flex justify-between items-end">
+              <div>
+                <h3 className="text-2xl font-black text-slate-800">{formatCurrency(stats.currentBalance)}</h3>
+                <p className="text-[10px] text-slate-400 mt-2 text-left">Available for immediate payout</p>
+              </div>
+              <button 
+                onClick={requestWithdrawal}
+                disabled={stats.currentBalance < 500}
+                className="px-4 py-2 bg-walmart-blue text-white rounded-xl text-xs font-bold hover:bg-blue-700 disabled:opacity-30 transition-all shadow-lg shadow-blue-100 uppercase tracking-tighter"
+              >
+                Withdraw
+              </button>
+           </div>
         </div>
         <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-           <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Total Settled</p>
+           <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 text-left">Total Settled</p>
            <h3 className="text-2xl font-black text-green-600">{formatCurrency(stats.paidAmount)}</h3>
-           <p className="text-[10px] text-slate-400 mt-2">Paid to your primary bank account</p>
+           <p className="text-[10px] text-slate-400 mt-2 text-left">Paid to your primary bank account</p>
         </div>
       </div>
 

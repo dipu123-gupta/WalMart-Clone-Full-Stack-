@@ -89,18 +89,38 @@ const registerEventHandlers = () => {
         channels: ['in_app', 'push'],
       });
 
-      // 💰 Credit Revenue to Sellers & 📦 Finalize Inventory
+      // 💰 Financial Settlement & 📦 Inventory Finalization
       const Seller = require('../models/Seller');
+      const DeliveryAgent = require('../models/DeliveryAgent');
       const Inventory = require('../models/Inventory');
+      const Transaction = require('../models/Transaction');
+
+      // 1. Credit Sellers
       for (const item of order.items) {
         if (item.status === 'delivered' || order.orderStatus === 'delivered') {
-          // Update Seller Stats
-          await Seller.findOneAndUpdate(
+          const netProceeds = item.sellerNetProceeds || item.total;
+          
+          // Update Seller Balance
+          const seller = await Seller.findOneAndUpdate(
             { userId: item.sellerId },
-            { $inc: { totalRevenue: item.sellerNetProceeds || item.total, totalOrders: 1 } }
+            { $inc: { totalRevenue: netProceeds, currentBalance: netProceeds, totalOrders: 1 } },
+            { new: true }
           );
 
-          // Deduct Final Inventory — handles both variant and base products
+          if (seller) {
+            // Log Transaction for Seller
+            await Transaction.create({
+              userId: seller.userId,
+              userRole: 'seller',
+              amount: netProceeds,
+              type: 'credit',
+              category: 'sale_proceeds',
+              orderId: order._id,
+              description: `Sale proceeds for item: ${item.name}`,
+            });
+          }
+
+          // Deduct Final Inventory
           if (item.variantId) {
             await Inventory.findOneAndUpdate(
               { variantId: item.variantId },
@@ -115,9 +135,32 @@ const registerEventHandlers = () => {
         }
       }
 
-      logger.info(`Revenue credited for order: ${order.orderNumber}`);
+      // 2. Credit Delivery Agent (Fixed fee: ₹40)
+      if (order.deliveryAgent) {
+        const deliveryFee = 40;
+        const agent = await DeliveryAgent.findByIdAndUpdate(
+          order.deliveryAgent,
+          { $inc: { totalEarnings: deliveryFee, currentBalance: deliveryFee, totalDeliveries: 1 } },
+          { new: true }
+        );
+
+        if (agent) {
+          // Log Transaction for Agent
+          await Transaction.create({
+            userId: agent.userId,
+            userRole: 'delivery_agent',
+            amount: deliveryFee,
+            type: 'credit',
+            category: 'delivery_fee',
+            orderId: order._id,
+            description: `Delivery fee for order: ${order.orderNumber}`,
+          });
+        }
+      }
+
+      logger.info(`Financial settlement completed for order: ${order.orderNumber}`);
     } catch (error) {
-      logger.error('Failed to send delivered notification:', error);
+      logger.error('Failed to process delivered order financial settlement:', error);
     }
   });
 

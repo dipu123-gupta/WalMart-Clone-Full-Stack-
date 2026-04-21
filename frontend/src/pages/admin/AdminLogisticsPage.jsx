@@ -10,7 +10,7 @@ import {
   Navigation
 } from 'lucide-react';
 import api from '@/services/api';
-import { formatDate } from '@/utils/helpers';
+import { formatDate, formatCurrency } from '@/utils/helpers';
 import toast from 'react-hot-toast';
 
 const AdminLogisticsPage = () => {
@@ -141,7 +141,10 @@ const AdminLogisticsPage = () => {
                    </div>
                  ))}
               </div>
-              <button className="w-full mt-6 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-xs font-bold transition-all flex items-center justify-center gap-2">
+              <button 
+                onClick={() => window.location.href = '/admin/users'}
+                className="w-full mt-6 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-xs font-bold transition-all flex items-center justify-center gap-2"
+              >
                  <UserPlus size={14} /> Onboard New Agent
               </button>
            </div>

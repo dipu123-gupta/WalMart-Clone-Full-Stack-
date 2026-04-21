@@ -46,7 +46,7 @@ const setDefaultAddress = asyncHandler(async (req, res) => {
 // Admin endpoints
 const getAllUsers = asyncHandler(async (req, res) => {
   const { users, meta } = await userService.getAllUsers(req.query);
-  new ApiResponse(200, 'Users fetched', users, meta).send(res);
+  new ApiResponse(200, 'Users fetched', { users }, meta).send(res);
 });
 
 const updateUserStatus = asyncHandler(async (req, res) => {

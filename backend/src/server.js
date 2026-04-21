@@ -8,7 +8,7 @@ process.on('uncaughtException', (err) => {
 });
 
 process.on('unhandledRejection', (reason, promise) => {
-  console.error('CRITICAL UNHANDLED REJECTION:', reason);
+  console.error('CRITICAL UNHANDLED REJECTION:', reason, promise);
   process.exit(1);
 });
 

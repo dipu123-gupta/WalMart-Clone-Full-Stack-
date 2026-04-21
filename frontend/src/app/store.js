@@ -6,6 +6,9 @@ import orderReducer from '@/features/orders/orderSlice';
 import searchReducer from '@/features/search/searchSlice';
 import wishlistReducer from '@/features/wishlist/wishlistSlice';
 import notificationReducer from '@/features/notifications/notificationSlice';
+import compareReducer from '@/features/compare/compareSlice';
+
+import deliveryReducer from '@/features/delivery/deliverySlice';
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +19,8 @@ export const store = configureStore({
     search: searchReducer,
     wishlist: wishlistReducer,
     notifications: notificationReducer,
+    compare: compareReducer,
+    delivery: deliveryReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

@@ -117,9 +117,9 @@ class OrderService {
       for (const item of orderItems) {
         const seller = await Seller.findOne({ userId: item.sellerId }).session(session);
         if (seller) {
-          const commissionAmount = (item.total * seller.commissionRate) / 100;
+          const commissionAmount = Math.round(((item.total * seller.commissionRate) / 100) * 100) / 100;
           item.commissionAmount = commissionAmount;
-          item.sellerNetProceeds = item.total - commissionAmount;
+          item.sellerNetProceeds = Math.round((item.total - commissionAmount) * 100) / 100;
           
           // Note: seller.totalRevenue is now updated only on delivery via event handlers
         }
@@ -576,13 +576,44 @@ class OrderService {
     if (!order) throw ApiError.notFound('Order not found');
 
     const DeliveryAgent = require('../models/DeliveryAgent');
-    const agent = await DeliveryAgent.findById(agentId);
+    const User = require('../models/User');
+    
+    // 1. Try to find DeliveryAgent profile directly by ID
+    let agent = await DeliveryAgent.findById(agentId).populate('userId');
+    
+    // 2. If not found, look up by userId (since frontend dropdown sends userId)
+    if (!agent) {
+      agent = await DeliveryAgent.findOne({ userId: agentId }).populate('userId');
+    }
+
+    // 3. Fallback: Create profile if user exists with correct role
+    if (!agent) {
+      const user = await User.findOne({ _id: agentId, role: 'delivery_agent' });
+      if (user) {
+        agent = await DeliveryAgent.create({ 
+          userId: user._id, 
+          isVerified: true 
+        });
+        // Refetch to ensure population works if needed, although we have user now
+        agent.userId = user;
+      }
+    }
+
     if (!agent) throw ApiError.notFound('Delivery agent not found');
 
-    order.deliveryAgent = agentId;
+    // Link agent to order
+    order.deliveryAgent = agent._id;
+    
+    // Transition status to processing if it was confirmed
+    if (order.orderStatus === ORDER_STATUS.CONFIRMED) {
+      order.orderStatus = ORDER_STATUS.PROCESSING;
+    }
+
+    const agentName = agent.userId ? `${agent.userId.firstName} ${agent.userId.lastName}` : 'Agent';
+    
     order.statusHistory.push({
       status: 'assigned',
-      note: `Delivery assigned to ${agent.firstName} ${agent.lastName}`,
+      note: `Delivery assigned to ${agentName}`,
     });
 
     await order.save();

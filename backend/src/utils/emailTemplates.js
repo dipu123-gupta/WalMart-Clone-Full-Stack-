@@ -1,3 +1,5 @@
+const env = require('../config/env');
+
 /**
  * OTP Email Template
  */
@@ -72,7 +74,7 @@ const welcomeEmailTemplate = (name) => `
         <li>Save items to your wishlist</li>
       </ul>
       <p style="text-align: center;">
-        <a href="${process.env.CLIENT_URL || 'http://localhost:5173'}" class="cta">Start Shopping →</a>
+        <a href="${env.CLIENT_URL}" class="cta">Start Shopping →</a>
       </p>
     </div>
     <div class="footer">

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { 
@@ -10,7 +11,9 @@ import {
   ExternalLink,
   Ticket,
   Banknote,
-  Truck
+  Truck,
+  Menu,
+  X
 } from 'lucide-react';
 import { logout } from '@/features/auth/authSlice';
 import toast from 'react-hot-toast';
@@ -26,6 +29,7 @@ const navItems = [
 ];
 
 const AdminLayout = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -37,14 +41,25 @@ const AdminLayout = () => {
   };
 
   return (
-    <div className="flex h-screen bg-slate-100 font-sans">
+    <div className="flex h-screen bg-slate-100 font-sans overflow-hidden">
+      {/* Mobile Sidebar Overlay */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-slate-900/50 z-40 md:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar - distinct dark teal theme for Admin safety bounds */}
-      <aside className="w-64 bg-slate-900 border-r border-slate-800 text-slate-300 flex flex-col transition-all duration-300 shadow-2xl z-20">
-        <div className="h-16 flex items-center px-6 border-b border-slate-800 bg-black/40">
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 border-r border-slate-800 text-slate-300 flex flex-col transition-transform duration-300 transform md:relative md:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="h-16 flex items-center justify-between px-6 border-b border-slate-800 bg-black/40">
           <span className="text-xl font-bold tracking-widest flex items-center gap-2 text-white">
             <ShieldAlert size={24} className="text-red-500" />
             ADMIN <span className="text-red-500">CORE</span>
           </span>
+          <button className="md:hidden text-slate-400 hover:text-white" onClick={() => setIsSidebarOpen(false)}>
+            <X size={24} />
+          </button>
         </div>
 
         <nav className="flex-1 py-8 px-4 space-y-1.5 overflow-y-auto">
@@ -55,6 +70,7 @@ const AdminLayout = () => {
               <NavLink
                 key={item.path}
                 to={item.path}
+                onClick={() => setIsSidebarOpen(false)}
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-all ${
                     isActive 
@@ -90,23 +106,28 @@ const AdminLayout = () => {
       </aside>
 
       {/* Main Content Pane */}
-      <main className="flex-1 flex flex-col overflow-hidden relative">
+      <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
         {/* Header */}
-        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 shadow-sm z-10">
-          <h2 className="text-lg font-bold text-slate-800">System Control</h2>
-          <div className="flex items-center gap-4">
-             <span className="flex items-center gap-2 text-xs font-medium text-green-600 bg-green-50 px-3 py-1.5 rounded-full border border-green-200">
+        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 md:px-8 shadow-sm z-10">
+          <div className="flex items-center gap-3">
+            <button className="md:hidden p-2 text-slate-500 hover:bg-slate-100 rounded-md" onClick={() => setIsSidebarOpen(true)}>
+              <Menu size={24} />
+            </button>
+            <h2 className="text-md md:text-lg font-bold text-slate-800">System Control</h2>
+          </div>
+          <div className="flex items-center gap-2 md:gap-4">
+             <span className="hidden md:flex items-center gap-2 text-xs font-medium text-green-600 bg-green-50 px-3 py-1.5 rounded-full border border-green-200">
                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
                System Operational
              </span>
-             <a href="/" target="_blank" className="flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-walmart-blue transition-colors">
+             <a href="/" target="_blank" className="hidden sm:flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-walmart-blue transition-colors">
                Storefront <ExternalLink size={14} />
              </a>
           </div>
         </header>
 
         {/* Dynamic Route View */}
-        <div className="flex-1 overflow-auto p-8">
+        <div className="flex-1 overflow-auto p-4 md:p-8">
           <div className="max-w-[1400px] mx-auto animate-fade-in pb-12">
             <Outlet />
           </div>

@@ -8,6 +8,7 @@ const ProductVariant = require('../models/ProductVariant');
 const Inventory = require('../models/Inventory');
 const Coupon = require('../models/Coupon');
 const logger = require('../config/logger');
+const env = require('../config/env');
 
 const categories = [
   { name: 'Electronics', slug: 'electronics', icon: '📱', color: 'from-blue-500 to-cyan-400', description: 'Smartphones, laptops, accessories', sortOrder: 1 },
@@ -52,40 +53,37 @@ const seed = async () => {
     logger.info('Cleared existing data');
 
     // Create admin user
-    const adminPassword = await bcrypt.hash('Admin@123', 12);
     const admin = await User.create({
       firstName: 'Admin',
       lastName: 'User',
-      email: 'admin@walmart.com',
-      password: adminPassword,
+      email: env.SEED_ADMIN_EMAIL,
+      password: env.SEED_ADMIN_PASSWORD,
       role: 'admin',
       isVerified: true,
     });
-    logger.info(`Admin user created: admin@walmart.com / Admin@123`);
+    logger.info(`Admin user created: ${env.SEED_ADMIN_EMAIL} / ${env.SEED_ADMIN_PASSWORD}`);
 
     // Create seller user
-    const sellerPassword = await bcrypt.hash('Seller@123', 12);
     const seller = await User.create({
       firstName: 'John',
       lastName: 'Seller',
-      email: 'seller@walmart.com',
-      password: sellerPassword,
+      email: env.SEED_SELLER_EMAIL,
+      password: env.SEED_SELLER_PASSWORD,
       role: 'seller',
       isVerified: true,
     });
-    logger.info(`Seller user created: seller@walmart.com / Seller@123`);
+    logger.info(`Seller user created: ${env.SEED_SELLER_EMAIL} / ${env.SEED_SELLER_PASSWORD}`);
 
     // Create customer
-    const customerPassword = await bcrypt.hash('Customer@123', 12);
     const customer = await User.create({
       firstName: 'Jane',
       lastName: 'Customer',
-      email: 'customer@walmart.com',
-      password: customerPassword,
+      email: env.SEED_CUSTOMER_EMAIL,
+      password: env.SEED_CUSTOMER_PASSWORD,
       role: 'customer',
       isVerified: true,
     });
-    logger.info(`Customer user created: customer@walmart.com / Customer@123`);
+    logger.info(`Customer user created: ${env.SEED_CUSTOMER_EMAIL} / ${env.SEED_CUSTOMER_PASSWORD}`);
 
     // Categories
     const createdCategories = {};
@@ -181,9 +179,9 @@ const seed = async () => {
 
     logger.info('\n✅ Seed completed successfully!\n');
     logger.info('Test credentials:');
-    logger.info('  Admin:    admin@walmart.com    / Admin@123');
-    logger.info('  Seller:   seller@walmart.com   / Seller@123');
-    logger.info('  Customer: customer@walmart.com / Customer@123');
+    logger.info(`  Admin:    ${env.SEED_ADMIN_EMAIL}    / ${env.SEED_ADMIN_PASSWORD}`);
+    logger.info(`  Seller:   ${env.SEED_SELLER_EMAIL}   / ${env.SEED_SELLER_PASSWORD}`);
+    logger.info(`  Customer: ${env.SEED_CUSTOMER_EMAIL} / ${env.SEED_CUSTOMER_PASSWORD}`);
     logger.info('  Coupons:  WELCOME10, FLAT200, SUPER50\n');
 
     process.exit(0);

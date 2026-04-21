@@ -1,40 +1,48 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { searchProducts } from '@/features/products/productSlice';
 import ProductCard from '@/features/products/components/ProductCard';
 import ProductCardSkeleton from '@/features/products/components/ProductCardSkeleton';
-import { Search as SearchIcon } from 'lucide-react';
+import { Search as SearchIcon, Filter } from 'lucide-react';
+import api from '@/services/api';
 
 const SearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const dispatch = useDispatch();
   const { items, isLoading } = useSelector((state) => state.products);
+  
   const query = searchParams.get('q') || '';
   const categoryFilter = searchParams.get('category') || '';
   const minPrice = searchParams.get('minPrice') || '';
   const maxPrice = searchParams.get('maxPrice') || '';
+  const sortBy = searchParams.get('sortBy') || 'relevance';
 
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     const fetchCats = async () => {
-      const { data } = await api.get('/public/categories');
-      setCategories(data.data || []);
+      try {
+        const { data } = await api.get('/categories');
+        setCategories(data.data || []);
+      } catch (err) {
+        console.error("Failed to load categories");
+      }
     };
     fetchCats();
   }, []);
 
   useEffect(() => {
-    if (query) {
+    if (query || categoryFilter) {
       dispatch(searchProducts({ 
         q: query, 
         category: categoryFilter,
         minPrice,
-        maxPrice
+        maxPrice,
+        sortBy
       }));
     }
-  }, [dispatch, query, categoryFilter, minPrice, maxPrice]);
+  }, [dispatch, query, categoryFilter, minPrice, maxPrice, sortBy]);
 
   const setFilter = (key, value) => {
     const newParams = new URLSearchParams(searchParams);
@@ -90,7 +98,7 @@ const SearchPage = () => {
               </div>
 
               {/* Reset */}
-              {(categoryFilter || minPrice || maxPrice) && (
+              {(categoryFilter || minPrice || maxPrice || sortBy !== 'relevance') && (
                 <button 
                   onClick={() => setSearchParams({ q: query })}
                   className="w-full mt-6 text-xs font-bold text-red-500 hover:underline"
@@ -112,16 +120,22 @@ const SearchPage = () => {
           <div className="mb-6 flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-black text-slate-800">
-                Results for "{query}"
+                {query ? `Results for "${query}"` : 'Browse Products'}
               </h1>
               <p className="text-slate-500 text-sm mt-1">{(items || []).length} items found</p>
             </div>
             <div className="flex items-center gap-2 text-xs font-bold text-slate-400">
                SORT BY: 
-               <select className="bg-transparent border-none outline-none text-slate-800 font-black cursor-pointer">
-                  <option>Relevance</option>
-                  <option>Price: Low to High</option>
-                  <option>Newest First</option>
+               <select 
+                 value={sortBy}
+                 onChange={(e) => setFilter('sortBy', e.target.value)}
+                 className="bg-transparent border-none outline-none text-slate-800 font-black cursor-pointer"
+               >
+                  <option value="relevance">Relevance</option>
+                  <option value="price_asc">Price: Low to High</option>
+                  <option value="price_desc">Price: High to Low</option>
+                  <option value="newest">Newest First</option>
+                  <option value="rating">Top Rated</option>
                </select>
             </div>
           </div>

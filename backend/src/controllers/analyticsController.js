@@ -4,15 +4,24 @@ const Product = require('../models/Product');
 const Payment = require('../models/Payment');
 const asyncHandler = require('../middlewares/asyncHandler');
 const ApiResponse = require('../utils/ApiResponse');
+const env = require('../config/env');
 
 const getOverview = asyncHandler(async (req, res) => {
-  const [totalUsers, totalOrders, totalProducts, revenueResult, recentOrders] = await Promise.all([
+  const [totalUsers, totalOrders, totalProducts, financeResult, recentOrders] = await Promise.all([
     User.countDocuments({ role: 'customer' }),
     Order.countDocuments(),
     Product.countDocuments({ status: 'active' }),
     Order.aggregate([
       { $match: { paymentStatus: 'paid' } },
-      { $group: { _id: null, total: { $sum: '$pricing.total' }, count: { $sum: 1 } } },
+      {
+        $group: {
+          _id: null,
+          totalRevenue: { $sum: '$pricing.total' },
+          platformProfit: { $sum: { $sum: '$items.commissionAmount' } },
+          totalShipping: { $sum: '$pricing.shippingFee' },
+          count: { $sum: 1 },
+        },
+      },
     ]),
     Order.find()
       .sort({ createdAt: -1 })
@@ -22,11 +31,15 @@ const getOverview = asyncHandler(async (req, res) => {
       .lean(),
   ]);
 
+  const stats = financeResult[0] || { totalRevenue: 0, platformProfit: 0, totalShipping: 0 };
+  
   new ApiResponse(200, 'Overview', {
     totalUsers,
     totalOrders,
     totalProducts,
-    totalRevenue: revenueResult[0]?.total || 0,
+    totalRevenue: stats.totalRevenue,
+    platformProfit: stats.platformProfit,
+    totalShipping: stats.totalShipping,
     recentOrders,
   }).send(res);
 });
@@ -118,7 +131,7 @@ const getFraudAlerts = asyncHandler(async (req, res) => {
 
   // High-value orders
   const highValueOrders = await Order.find({
-    'pricing.total': { $gte: 50000 },
+    'pricing.total': { $gte: env.HIGH_VALUE_ORDER_THRESHOLD },
     createdAt: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
   })
     .populate('userId', 'firstName lastName email createdAt')

@@ -1,4 +1,4 @@
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { 
   Truck, 
@@ -10,6 +10,7 @@ import {
   Navigation
 } from 'lucide-react';
 import { logout } from '@/features/auth/authSlice';
+import { fetchAgentProfile } from '@/features/delivery/deliverySlice';
 import toast from 'react-hot-toast';
 
 const navItems = [
@@ -20,8 +21,13 @@ const navItems = [
 
 const DeliveryAgentLayout = () => {
   const { user } = useSelector((state) => state.auth);
+  const { isAvailable, loading } = useSelector((state) => state.delivery);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    dispatch(fetchAgentProfile());
+  }, [dispatch]);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -86,7 +92,11 @@ const DeliveryAgentLayout = () => {
         {/* Header Ribbon */}
         <header className="h-16 bg-white border-b flex items-center justify-between px-8 shadow-sm z-10">
           <h2 className="text-lg font-black text-slate-800">
-             Shift Active: <span className="text-green-600">Online</span>
+             Shift Status: {isAvailable ? (
+               <span className="text-green-600">Online</span>
+             ) : (
+               <span className="text-slate-400">Offline</span>
+             )}
           </h2>
           <div className="flex items-center gap-5">
             <button className="relative p-2 text-slate-400 hover:bg-slate-100 rounded-full transition-colors">
@@ -95,10 +105,12 @@ const DeliveryAgentLayout = () => {
             </button>
             <div className="flex flex-col items-end">
                <span className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">Availability</span>
-               <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                  <span className="text-xs font-bold text-slate-700">Ready for Duty</span>
-               </div>
+                <div className="flex items-center gap-2">
+                   <span className={`w-2 h-2 rounded-full ${isAvailable ? 'bg-green-500' : 'bg-slate-300'}`}></span>
+                   <span className="text-xs font-bold text-slate-700">
+                     {isAvailable ? 'Ready for Duty' : 'On Break'}
+                   </span>
+                </div>
             </div>
           </div>
         </header>

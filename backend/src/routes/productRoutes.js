@@ -15,6 +15,7 @@ router.get('/featured', cacheMiddleware(600), productController.getFeaturedProdu
 router.get('/search', productController.searchProducts);
 router.get('/suggestions', productController.getSuggestions);
 router.get('/recently-viewed', authenticate, productController.getRecentlyViewed);
+router.post('/recent', authenticate, productController.addToRecentlyViewed);
 router.get('/:slug', optionalAuth, productController.getProductBySlug);
 
 // Reviews

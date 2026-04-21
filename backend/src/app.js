@@ -20,11 +20,37 @@ app.set('trust proxy', 1);
 // ===== Security Middleware =====
 app.use(helmet());
 
-// Dynamic CORS to handle trailing slashes and multiple origins
-const allowedOrigins = [env.CLIENT_URL, env.CLIENT_URL.replace(/\/$/, '')];
+// Dynamic CORS — built entirely from environment variables
+const buildAllowedOrigins = () => {
+  const origins = new Set();
+
+  // Primary client URL (trailing-slash-safe)
+  if (env.CLIENT_URL) {
+    origins.add(env.CLIENT_URL.replace(/\/$/, ''));
+    origins.add(env.CLIENT_URL.replace(/\/$/, '') + '/');
+  }
+
+  // Optional extra origins via comma-separated CORS_ORIGINS env var
+  if (process.env.CORS_ORIGINS) {
+    process.env.CORS_ORIGINS.split(',').forEach((o) => origins.add(o.trim()));
+  }
+
+  // Always allow localhost variants in development
+  if (env.isDev()) {
+    origins.add('http://localhost:5173');
+    origins.add('http://127.0.0.1:5173');
+    origins.add(`http://localhost:${env.PORT}`);
+  }
+
+  return [...origins];
+};
+
+const allowedOrigins = buildAllowedOrigins();
+
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
+    // Allow requests with no origin (like mobile apps or curl) or if origin is in allowed list
+    if (!origin || allowedOrigins.includes(origin) || env.isDev()) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));

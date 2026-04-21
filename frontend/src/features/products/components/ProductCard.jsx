@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { Heart, Star, ShoppingCart } from 'lucide-react';
+import { Heart, Star, ShoppingCart, GitCompare } from 'lucide-react';
 import { addToCart } from '@/features/cart/cartSlice';
 import { toggleWishlist } from '@/features/wishlist/wishlistSlice';
+import { addToCompare } from '@/features/compare/compareSlice';
 import { optimizeCloudinaryUrl } from '@/utils/imageOptimizer';
+import toast from 'react-hot-toast';
 
 const ProductCard = ({ product, isWishlisted = false }) => {
   const dispatch = useDispatch();
@@ -23,6 +25,13 @@ const ProductCard = ({ product, isWishlisted = false }) => {
     e.stopPropagation();
     dispatch(toggleWishlist(product._id));
     toast.success(isWishlisted ? 'Removed from wishlist' : 'Added to wishlist');
+  };
+
+  const handleCompare = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dispatch(addToCompare(product));
+    toast.success('Added to comparison');
   };
 
   return (
@@ -51,6 +60,13 @@ const ProductCard = ({ product, isWishlisted = false }) => {
               }`}
             >
               <Heart size={16} fill={isWishlisted ? 'currentColor' : 'none'} />
+            </button>
+            <button
+              onClick={handleCompare}
+              className="w-9 h-9 bg-white text-gray-600 hover:text-walmart-blue rounded-full flex items-center justify-center shadow-lg transition-colors"
+              title="Add to Compare"
+            >
+              <GitCompare size={16} />
             </button>
           </div>
           {/* Add to cart */}

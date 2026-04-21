@@ -16,6 +16,7 @@ const ProfilePage = lazy(() => import('@/pages/ProfilePage'));
 const WishlistPage = lazy(() => import('@/pages/WishlistPage'));
 const SearchPage = lazy(() => import('@/pages/SearchPage'));
 const NotificationsPage = lazy(() => import('@/pages/NotificationsPage'));
+const ComparePage = lazy(() => import('@/pages/ComparePage'));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
 
 // Seller Pages
@@ -29,6 +30,8 @@ const SellerSettingsPage = lazy(() => import('@/pages/seller/SellerSettingsPage'
 // Delivery Agent Pages
 const DeliveryAgentLayout = lazy(() => import('@/layouts/DeliveryAgentLayout'));
 const DeliveryAgentDashboardPage = lazy(() => import('@/pages/delivery/DeliveryAgentDashboardPage'));
+const DeliveryHistoryPage = lazy(() => import('@/pages/delivery/DeliveryHistoryPage'));
+const DeliverySettingsPage = lazy(() => import('@/pages/delivery/DeliverySettingsPage'));
 
 // Admin Pages
 const AdminLayout = lazy(() => import('@/layouts/AdminLayout'));
@@ -72,6 +75,7 @@ const router = createBrowserRouter([
       { path: 'products/:slug', element: wrap(ProductDetailPage) },
       { path: 'search', element: wrap(SearchPage) },
       { path: 'cart', element: wrap(CartPage) },
+      { path: 'compare', element: wrap(ComparePage) },
       { path: 'checkout', element: wrap(CheckoutPage, 'protected') },
       { path: 'orders', element: wrap(OrdersPage, 'protected') },
       { path: 'orders/:id', element: wrap(OrderDetailPage, 'protected') },
@@ -132,6 +136,8 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: wrap(DeliveryAgentDashboardPage) },
       { path: 'dashboard', element: wrap(DeliveryAgentDashboardPage) },
+      { path: 'history', element: wrap(DeliveryHistoryPage) },
+      { path: 'settings', element: wrap(DeliverySettingsPage) },
     ]
   }
 ]);

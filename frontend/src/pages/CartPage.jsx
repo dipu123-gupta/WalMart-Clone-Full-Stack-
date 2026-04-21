@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { fetchCart, updateCartItem, removeCartItem, applyCoupon } from '@/features/cart/cartSlice';
 import { Minus, Plus, Trash2, ShoppingBag, ArrowRight, Tag } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { FREE_SHIPPING_THRESHOLD, STANDARD_SHIPPING_FEE, PLACEHOLDER_IMAGE } from '@/constants';
 
 const CartPage = () => {
   const dispatch = useDispatch();
@@ -15,7 +16,7 @@ const CartPage = () => {
   }, [dispatch]);
 
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const shipping = subtotal >= 500 ? 0 : 40;
+  const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : STANDARD_SHIPPING_FEE;
   const total = subtotal + shipping - couponDiscount;
 
   const handleQuantityChange = (itemId, quantity) => {
@@ -63,7 +64,7 @@ const CartPage = () => {
             return (
               <div key={item._id} className="bg-white rounded-2xl p-4 sm:p-6 border flex gap-4 animate-fade-in">
                 <Link to={`/products/${product.slug}`} className="w-24 h-24 sm:w-32 sm:h-32 rounded-xl overflow-hidden bg-gray-50 shrink-0">
-                  <img src={product.images?.[0]?.url || 'https://via.placeholder.com/150'} alt={product.name} className="w-full h-full object-cover" />
+                  <img src={product.images?.[0]?.url || PLACEHOLDER_IMAGE} alt={product.name} className="w-full h-full object-cover" />
                 </Link>
                 <div className="flex-1 min-w-0">
                   <Link to={`/products/${product.slug}`} className="font-semibold line-clamp-2 hover:text-walmart-blue transition-colors">{product.name}</Link>
@@ -141,9 +142,9 @@ const CartPage = () => {
               </div>
             </div>
 
-            {subtotal < 500 && (
+            {subtotal < FREE_SHIPPING_THRESHOLD && (
               <p className="text-xs text-gray-500 mt-3 bg-blue-50 px-3 py-2 rounded-lg">
-                Add ₹{(500 - subtotal).toLocaleString()} more for free shipping
+                Add ₹{(FREE_SHIPPING_THRESHOLD - subtotal).toLocaleString()} more for free shipping
               </p>
             )}
 

@@ -16,7 +16,9 @@ import {
   MapPin,
   History,
   TrendingUp,
-  Store
+  Store,
+  GitCompare,
+  Truck
 } from 'lucide-react';
 import { logout } from '@/features/auth/authSlice';
 import { setQuery, setSuggestions, clearSearch, addRecentSearch, setSearchOpen } from '@/features/search/searchSlice';
@@ -30,6 +32,7 @@ const Navbar = () => {
   const { items: cartItems } = useSelector((state) => state.cart);
   const { unreadCount } = useSelector((state) => state.notifications);
   const { query, suggestions, recentSearches, isOpen } = useSelector((state) => state.search);
+  const { items: compareItems } = useSelector((state) => state.compare);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -129,16 +132,47 @@ const Navbar = () => {
       )}
 
       {/* Main Bar */}
-      <div className="relative max-w-7xl mx-auto px-6 py-4">
-        <div className="flex items-center gap-8 lg:gap-12">
-          {/* Brand Logo */}
-          <Link to="/" className="shrink-0 group transform hover:scale-105 transition-all duration-300">
-             <Logo className="h-9" />
-          </Link>
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-3 md:py-4">
+        <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-8 lg:gap-12">
+          {/* Top Row: Logo + Mobile Actions */}
+          <div className="flex items-center justify-between w-full md:w-auto shrink-0">
+            {/* Brand Logo */}
+            <Link to="/" className="shrink-0 group transform hover:scale-105 transition-all duration-300">
+               <Logo className="h-7 sm:h-9" />
+            </Link>
 
-          {/* Search Container - Expanded & Interactive */}
-          <form onSubmit={handleSearchSubmit} className="flex-1 max-w-3xl relative" ref={searchRef}>
-            <div className="group flex items-center bg-gray-100 rounded-2xl border-2 border-transparent focus-within:border-walmart-blue focus-within:bg-white transition-all duration-300 shadow-sm focus-within:shadow-md">
+            {/* Mobile-only Icons (visible only < 768px) */}
+            <div className="flex items-center gap-1 md:hidden">
+               {/* Cart */}
+               <Link to="/cart" className="relative p-2.5 text-gray-700 hover:bg-gray-100 rounded-xl transition-all">
+                 <ShoppingCart size={22} />
+                 {cartCount > 0 && (
+                   <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-walmart-blue border-2 border-white text-white text-[8px] rounded-full flex items-center justify-center font-black">
+                     {cartCount > 9 ? '9+' : cartCount}
+                   </span>
+                 )}
+               </Link>
+               
+               {/* Account/User - if authenticated, show avatar */}
+               {isAuthenticated && (
+                  <Link to="/profile" className="p-2.5 text-gray-700 hover:bg-gray-100 rounded-xl transition-all">
+                     <User size={22} />
+                  </Link>
+               )}
+
+               {/* Mobile Toggle */}
+               <button 
+                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
+                 className="p-2.5 text-gray-700 hover:bg-gray-100 rounded-xl transition-all"
+               >
+                 {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+               </button>
+            </div>
+          </div>
+
+          {/* Search Container - Full width on mobile, flexible on desktop */}
+          <form onSubmit={handleSearchSubmit} className="flex-1 w-full relative order-last md:order-none" ref={searchRef}>
+            <div className="group flex items-center bg-gray-100 rounded-xl sm:rounded-2xl border-2 border-transparent focus-within:border-walmart-blue focus-within:bg-white transition-all duration-300 shadow-sm focus-within:shadow-md">
               <div className="pl-4 text-gray-400 group-focus-within:text-walmart-blue">
                 <Search size={18} />
               </div>
@@ -147,20 +181,21 @@ const Navbar = () => {
                 value={query}
                 onChange={handleSearch}
                 onFocus={() => dispatch(setSearchOpen(true))}
-                placeholder="Search everything at WalMart online and in store"
-                className="w-full px-3 py-3 bg-transparent outline-none text-sm font-medium text-gray-800 placeholder-gray-500"
+                placeholder="Search everything at WalMart..."
+                className="w-full px-3 py-2.5 sm:py-3 bg-transparent outline-none text-xs sm:text-sm font-medium text-gray-800 placeholder-gray-500"
               />
               <button
                 type="submit"
-                className="mr-1 mx-1.5 px-6 py-2 bg-walmart-yellow text-gray-900 rounded-xl font-bold text-sm hover:brightness-110 transition-all active:scale-95 shadow-sm"
+                className="mr-1 mx-1 px-3 sm:px-6 py-1.5 sm:py-2 bg-walmart-yellow text-gray-900 rounded-lg sm:rounded-xl font-bold text-xs sm:text-sm hover:brightness-110 transition-all active:scale-95 shadow-sm"
               >
-                Search
+                <span className="hidden sm:inline">Search</span>
+                <span className="sm:hidden"><Search size={16}/></span>
               </button>
             </div>
 
             {/* Advanced Search Dropdown */}
             {isOpen && (
-              <div className="absolute top-[calc(100%+10px)] left-0 right-0 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-[110] animate-fade-in divide-y">
+              <div className="absolute top-[calc(100%+10px)] left-0 right-0 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-[110] animate-fade-in divide-y w-full">
                 {query.length < 2 ? (
                   <>
                     {recentSearches.length > 0 && (
@@ -170,7 +205,7 @@ const Navbar = () => {
                           <span className="text-[10px] uppercase font-bold tracking-widest text-gray-500">Recent Searches</span>
                         </div>
                         {recentSearches.map((q, i) => (
-                          <button key={i} onClick={() => handleRecentClick(q)} className="w-full flex items-center px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700 font-medium">
+                          <button key={i} onClick={() => handleRecentClick(q)} className="w-full flex items-center px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700 font-medium text-left">
                             {q}
                           </button>
                         ))}
@@ -198,17 +233,16 @@ const Navbar = () => {
                       className="flex items-center gap-4 px-4 py-3 hover:bg-blue-50 transition-colors group"
                       onClick={() => dispatch(clearSearch())}
                     >
-                      <div className="w-12 h-12 bg-gray-100 rounded-xl overflow-hidden shadow-inner group-hover:scale-110 transition-transform">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-100 rounded-xl overflow-hidden shadow-inner group-hover:scale-110 transition-transform">
                          <img src={s.images?.[0]?.url} alt={s.name} className="w-full h-full object-cover" />
                       </div>
                       <div className="flex-1">
-                        <p className="text-sm font-semibold text-gray-800 group-hover:text-walmart-blue transition-colors line-clamp-1">{s.name}</p>
+                        <p className="text-xs sm:text-sm font-semibold text-gray-800 group-hover:text-walmart-blue transition-colors line-clamp-1">{s.name}</p>
                         <div className="flex items-center gap-2">
                            <span className="text-xs font-bold text-walmart-blue">₹{(s.salePrice || s.basePrice).toLocaleString()}</span>
                            {s.salePrice && <span className="text-[10px] text-gray-400 line-through">₹{s.basePrice.toLocaleString()}</span>}
                         </div>
                       </div>
-                      <ArrowRight size={14} className="text-gray-300 group-hover:text-walmart-blue group-hover:translate-x-1 transition-all" />
                     </Link>
                   ))
                 )}
@@ -216,11 +250,21 @@ const Navbar = () => {
             )}
           </form>
 
-          {/* Action Icons */}
-          <div className="flex items-center gap-1 lg:gap-3 shrink-0">
+          {/* Desktop-only Action Icons (hidden < 768px) */}
+          <div className="hidden md:flex items-center gap-1 lg:gap-3 shrink-0">
             {/* Wishlist */}
             <Link to="/wishlist" className="p-3 text-gray-700 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all hidden lg:flex group">
               <Heart size={24} className="group-hover:fill-current transition-all" />
+            </Link>
+
+            {/* Compare */}
+            <Link to="/compare" className="relative p-3 text-gray-700 hover:text-walmart-blue hover:bg-blue-50 rounded-2xl transition-all group">
+              <GitCompare size={24} className="group-hover:rotate-12 transition-transform" />
+              {compareItems.length > 0 && (
+                <span className="absolute top-2.5 right-2.5 w-5 h-5 bg-orange-500 border-2 border-white text-white text-[9px] rounded-full flex items-center justify-center font-black">
+                  {compareItems.length}
+                </span>
+              )}
             </Link>
 
             {/* Notifications */}
@@ -228,7 +272,7 @@ const Navbar = () => {
               <Link to="/notifications" className="relative p-3 text-gray-700 hover:text-walmart-blue hover:bg-blue-50 rounded-2xl transition-all group">
                 <Bell size={24} className="group-hover:rotate-12 transition-transform" />
                 {unreadCount > 0 && (
-                  <span className="absolute top-2.5 right-2.5 w-5 h-5 bg-red-600 border-2 border-white text-white text-[9px] rounded-full flex items-center justify-center font-black animate-bounce-in">
+                  <span className="absolute top-2.5 right-2.5 w-5 h-5 bg-red-600 border-2 border-white text-white text-[9px] rounded-full flex items-center justify-center font-black">
                     {unreadCount > 9 ? '9+' : unreadCount}
                   </span>
                 )}
@@ -239,7 +283,7 @@ const Navbar = () => {
             <Link to="/cart" className="relative p-3 text-gray-700 hover:text-walmart-blue hover:bg-blue-50 rounded-2xl transition-all group">
               <ShoppingCart size={24} className="group-hover:-translate-y-0.5 transition-transform" />
               {cartCount > 0 && (
-                <span className="absolute top-2.5 right-2.5 w-5 h-5 bg-walmart-blue border-2 border-white text-white text-[9px] rounded-full flex items-center justify-center font-black animate-bounce-in">
+                <span className="absolute top-2.5 right-2.5 w-5 h-5 bg-walmart-blue border-2 border-white text-white text-[9px] rounded-full flex items-center justify-center font-black">
                   {cartCount > 9 ? '9+' : cartCount}
                 </span>
               )}
@@ -290,6 +334,9 @@ const Navbar = () => {
                       )}
                       {user?.role === 'admin' && (
                         <MenuItem to="/admin/dashboard" icon={<Settings size={16} className="text-red-500"/>} label="Admin Core" onClick={() => setProfileOpen(false)} />
+                      )}
+                      {user?.role === 'delivery_agent' && (
+                        <MenuItem to="/delivery/dashboard" icon={<Truck size={16} className="text-green-600"/>} label="Delivery Tasks" onClick={() => setProfileOpen(false)} />
                       )}
                     </div>
                     <div className="mt-3 pt-3 border-t px-2">

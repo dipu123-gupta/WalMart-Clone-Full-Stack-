@@ -13,6 +13,20 @@ const sellerSchema = new mongoose.Schema(
       required: [true, 'Business name is required'],
       trim: true,
     },
+    logo: {
+      url: { type: String, default: '' },
+      publicId: { type: String, default: '' }
+    },
+    description: {
+      type: String,
+      default: '',
+      trim: true,
+    },
+    supportEmail: {
+      type: String,
+      trim: true,
+      default: '',
+    },
     businessType: {
       type: String,
       enum: ['individual', 'company', 'partnership'],
@@ -60,6 +74,10 @@ const sellerSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    currentBalance: {
+      type: Number,
+      default: 0,
+    },
     paidAmount: {
       type: Number,
       default: 0,
@@ -92,7 +110,6 @@ const sellerSchema = new mongoose.Schema(
   }
 );
 
-sellerSchema.index({ userId: 1 });
 sellerSchema.index({ status: 1 });
 
 const Seller = mongoose.model('Seller', sellerSchema);

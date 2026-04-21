@@ -164,6 +164,24 @@ const updateLocation = asyncHandler(async (req, res) => {
 });
 
 /**
+ * Get delivery history (completed tasks)
+ */
+const getDeliveryHistory = asyncHandler(async (req, res) => {
+  const agent = await DeliveryAgent.findOne({ userId: req.user._id });
+  if (!agent) throw ApiError.notFound('Delivery agent profile not found');
+
+  const history = await Order.find({
+    deliveryAgent: agent._id,
+    orderStatus: ORDER_STATUS.DELIVERED,
+  })
+    .select('orderNumber orderStatus shippingAddress pricing deliveredAt items createdAt')
+    .sort({ deliveredAt: -1 })
+    .lean();
+
+  new ApiResponse(200, 'Delivery history', history).send(res);
+});
+
+/**
  * Toggle availability status
  */
 const toggleAvailability = asyncHandler(async (req, res) => {
@@ -185,4 +203,5 @@ module.exports = {
   getAgentProfile,
   updateLocation,
   toggleAvailability,
+  getDeliveryHistory,
 };

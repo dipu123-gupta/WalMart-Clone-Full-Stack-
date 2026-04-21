@@ -37,6 +37,7 @@ const AdminDashboardPage = () => {
     totalOrders: 0,
     totalRevenue: 0,
     totalProducts: 0,
+    platformProfit: 0,
   });
 
   const [trafficData, setTrafficData] = useState([]);
@@ -56,6 +57,7 @@ const AdminDashboardPage = () => {
           totalOrders: overview.totalOrders || 0,
           totalRevenue: overview.totalRevenue || 0,
           totalProducts: overview.totalProducts || 0,
+          platformProfit: overview.platformProfit || 0,
         });
 
         // Map revenue analytics to chart
@@ -64,15 +66,7 @@ const AdminDashboardPage = () => {
           orders: item.orders,
           revenue: Math.round(item.revenue)
         }));
-        setTrafficData(revData.length > 0 ? revData : [
-          { name: 'Mon', revenue: 4000, orders: 2400 },
-          { name: 'Tue', revenue: 3000, orders: 1398 },
-          { name: 'Wed', revenue: 5000, orders: 9800 },
-          { name: 'Thu', revenue: 2780, orders: 3908 },
-          { name: 'Fri', revenue: 1890, orders: 4800 },
-          { name: 'Sat', revenue: 2390, orders: 3800 },
-          { name: 'Sun', revenue: 3490, orders: 4300 },
-        ]);
+        setTrafficData(revData);
       } catch (err) {
         console.error("Admin dashboard stats error", err);
       } finally {
@@ -96,15 +90,15 @@ const AdminDashboardPage = () => {
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard 
-          title="Total Payload GMV" 
-          value={`₹${(stats.totalRevenue / 1000000).toFixed(2)}M`} 
-          subtext="Lifetime Gross Merchandise Value"
+          title="Platform Net Profit" 
+          value={formatCurrency(stats.platformProfit)} 
+          subtext="Net earnings from commissions"
           icon={Activity}
         />
         <StatCard 
           title="Registered Users" 
           value={stats.totalUsers.toLocaleString()} 
-          subtext="Buyers, Sellers, and Admins"
+          subtext="Buyers, Sellers, Agents, Admins"
           icon={Users}
         />
         <StatCard 

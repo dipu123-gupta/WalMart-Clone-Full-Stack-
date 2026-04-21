@@ -17,6 +17,12 @@ const addressSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Phone number is required'],
       trim: true,
+      validate: {
+        validator: function(v) {
+          return /^\d{10,12}$/.test(v);
+        },
+        message: props => `${props.value} is not a valid 10-12 digit phone number!`
+      }
     },
     addressLine1: {
       type: String,
@@ -42,7 +48,12 @@ const addressSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Pincode is required'],
       trim: true,
-      match: [/^\d{5,6}$/, 'Please enter a valid pincode'],
+      validate: {
+        validator: function(v) {
+          return /^\d{5,6}$/.test(v);
+        },
+        message: props => `${props.value} is not a valid pincode!`
+      }
     },
     country: {
       type: String,

@@ -2,10 +2,23 @@ const mongoose = require('mongoose');
 
 const payoutSchema = new mongoose.Schema(
   {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+    userRole: {
+      type: String,
+      enum: ['seller', 'delivery_agent'],
+      required: true,
+    },
     sellerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Seller',
-      required: true,
+    },
+    agentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'DeliveryAgent',
     },
     amount: {
       type: Number,

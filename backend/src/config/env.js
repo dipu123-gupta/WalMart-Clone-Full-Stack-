@@ -45,6 +45,20 @@ const env = {
   RATE_LIMIT_WINDOW_MS: parseInt(process.env.RATE_LIMIT_WINDOW_MS, 10) || 900000,
   RATE_LIMIT_MAX: parseInt(process.env.RATE_LIMIT_MAX, 10) || 100,
 
+  // CORS (extra allowed origins, comma-separated)
+  CORS_ORIGINS: process.env.CORS_ORIGINS || '',
+
+  // Analytics / Fraud Detection
+  HIGH_VALUE_ORDER_THRESHOLD: parseInt(process.env.HIGH_VALUE_ORDER_THRESHOLD, 10) || 50000,
+
+  // Seed Data
+  SEED_ADMIN_EMAIL: process.env.SEED_ADMIN_EMAIL || 'admin@walmart.com',
+  SEED_ADMIN_PASSWORD: process.env.SEED_ADMIN_PASSWORD || 'Admin@123',
+  SEED_SELLER_EMAIL: process.env.SEED_SELLER_EMAIL || 'seller@walmart.com',
+  SEED_SELLER_PASSWORD: process.env.SEED_SELLER_PASSWORD || 'Seller@123',
+  SEED_CUSTOMER_EMAIL: process.env.SEED_CUSTOMER_EMAIL || 'customer@walmart.com',
+  SEED_CUSTOMER_PASSWORD: process.env.SEED_CUSTOMER_PASSWORD || 'Customer@123',
+
   isDev() {
     return this.NODE_ENV === 'development';
   },

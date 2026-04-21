@@ -6,6 +6,7 @@ import { fetchCart } from '@/features/cart/cartSlice';
 import api from '@/services/api';
 import { MapPin, CreditCard, Banknote, Plus, ChevronDown, Shield, ArrowRight } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { FREE_SHIPPING_THRESHOLD, STANDARD_SHIPPING_FEE, SITE_NAME } from '@/constants';
 
 const CheckoutPage = () => {
   const dispatch = useDispatch();
@@ -35,7 +36,7 @@ const CheckoutPage = () => {
   };
 
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const shipping = subtotal >= 500 ? 0 : 40;
+  const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : STANDARD_SHIPPING_FEE;
   const total = subtotal + shipping - couponDiscount;
 
   const handleAddAddress = async (e) => {
@@ -67,7 +68,7 @@ const CheckoutPage = () => {
             amount: payData.amount,
             currency: payData.currency,
             order_id: payData.razorpayOrderId,
-            name: 'WalMart Clone',
+            name: SITE_NAME,
             description: 'Secure Payment for Order',
             image: '/logo-circle.png',
             prefill: {

@@ -10,7 +10,13 @@ class CartService {
    * Get cart (user or guest)
    */
   async getCart(userId, sessionId) {
-    const filter = userId ? { userId } : { sessionId };
+    if (!userId && !sessionId) {
+      throw ApiError.badRequest('User ID or Session ID is required to fetch cart');
+    }
+
+    // Strict filter: avoid finding a user's cart using guest session ID
+    const filter = userId ? { userId } : { sessionId, userId: null };
+    
     let cart = await Cart.findOne(filter)
       .populate({
         path: 'items.productId',
@@ -22,64 +28,89 @@ class CartService {
       });
 
     if (!cart) {
-      cart = await Cart.create({ ...filter, items: [] });
+      try {
+        cart = await Cart.create({ ...filter, items: [] });
+      } catch (error) {
+        if (error.code === 11000) {
+          cart = await Cart.findOne(filter)
+            .populate({
+              path: 'items.productId',
+              select: 'name slug images basePrice salePrice status isDeleted sellerId',
+            })
+            .populate({
+              path: 'items.variantId',
+              select: 'name sku price salePrice attributes',
+            });
+        } else {
+          throw error;
+        }
+      }
     }
 
-    // Validate cart items (check availability, price changes)
-    const validatedCart = await this._validateCartItems(cart);
-    return validatedCart;
+    // Validate cart items
+    return this._validateCartItems(cart);
   }
 
   /**
    * Add item to cart
    */
   async addItem(userId, sessionId, { productId, variantId, quantity = 1 }) {
+    if (!userId && !sessionId) {
+      throw ApiError.badRequest('User ID or Session ID is required');
+    }
+
     const product = await Product.findById(productId);
     if (!product || product.status !== 'active' || product.isDeleted) {
       throw ApiError.notFound('Product not found or unavailable');
     }
 
     let price = product.salePrice || product.basePrice;
-    let variant = null;
-
-    // Validate variant
+    
     if (variantId) {
-      variant = await ProductVariant.findOne({ _id: variantId, productId });
+      const variant = await ProductVariant.findOne({ _id: variantId, productId });
       if (!variant) throw ApiError.notFound('Variant not found');
       price = variant.salePrice || variant.price;
     }
 
     // Check stock
-    if (variantId) {
-      const inventory = await Inventory.findOne({ variantId });
-      if (!inventory || inventory.quantity - inventory.reservedQuantity < quantity) {
-        throw ApiError.badRequest('Insufficient stock');
+    const inventoryFilter = variantId ? { variantId } : { productId, variantId: null };
+    const inventory = await Inventory.findOne(inventoryFilter);
+    if (inventory && inventory.quantity - inventory.reservedQuantity < quantity) {
+      throw ApiError.badRequest('Insufficient stock');
+    }
+
+    const filter = userId ? { userId } : { sessionId, userId: null };
+    let cart = await Cart.findOne(filter);
+    
+    if (!cart) {
+      try {
+         cart = await Cart.create({ ...filter, items: [] });
+      } catch (e) {
+         if (e.code === 11000) cart = await Cart.findOne(filter);
+         else throw e;
       }
     }
 
-    const filter = userId ? { userId } : { sessionId };
-    let cart = await Cart.findOne(filter);
+    // Robust Item Matching (handles populated, unpopulated, or NULL productId)
+    const existingIndex = cart.items.findIndex(item => {
+      if (!item.productId) return false; // Skip broken references
 
-    if (!cart) {
-      cart = await Cart.create({ ...filter, items: [] });
-    }
-
-    // Check if item already in cart
-    const existingIndex = cart.items.findIndex(
-      (item) =>
-        item.productId.toString() === productId &&
-        ((!variantId && !item.variantId) ||
-          (variantId && item.variantId?.toString() === variantId))
-    );
+      const pId = (item.productId._id || item.productId).toString();
+      const vId = item.variantId 
+        ? (item.variantId._id || item.variantId).toString() 
+        : null;
+      
+      return pId === productId.toString() && vId === (variantId ? variantId.toString() : null);
+    });
 
     if (existingIndex > -1) {
-      const newQty = cart.items[existingIndex].quantity + quantity;
+      const newQty = cart.items[existingIndex].quantity + Number(quantity);
       if (newQty > 10) throw ApiError.badRequest('Maximum 10 units per item');
       cart.items[existingIndex].quantity = newQty;
       cart.items[existingIndex].price = price;
     } else {
       if (cart.items.length >= 50) throw ApiError.badRequest('Cart is full (max 50 items)');
-      cart.items.push({ productId, variantId, quantity, price });
+      cart.items.push({ productId, variantId: variantId || null, quantity: Number(quantity), price });
     }
 
     await cart.save();
@@ -94,7 +125,7 @@ class CartService {
       throw ApiError.badRequest('Quantity must be between 1 and 10');
     }
 
-    const filter = userId ? { userId } : { sessionId };
+    const filter = userId ? { userId } : { sessionId, userId: null };
     const cart = await Cart.findOne(filter);
     if (!cart) throw ApiError.notFound('Cart not found');
 
@@ -118,7 +149,7 @@ class CartService {
    * Remove item from cart
    */
   async removeItem(userId, sessionId, itemId) {
-    const filter = userId ? { userId } : { sessionId };
+    const filter = userId ? { userId } : { sessionId, userId: null };
     const cart = await Cart.findOne(filter);
     if (!cart) throw ApiError.notFound('Cart not found');
 
@@ -131,7 +162,7 @@ class CartService {
    * Clear cart
    */
   async clearCart(userId, sessionId) {
-    const filter = userId ? { userId } : { sessionId };
+    const filter = userId ? { userId } : { sessionId, userId: null };
     await Cart.findOneAndUpdate(filter, {
       items: [],
       couponCode: null,

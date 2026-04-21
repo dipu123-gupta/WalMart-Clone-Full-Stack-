@@ -19,6 +19,7 @@ router.get('/analytics', sellerController.getSellerAnalytics);
 router.get('/payouts', sellerController.getPayouts);
 router.get('/profile', sellerController.getSellerProfile);
 router.patch('/profile', sellerController.updateSellerProfile);
+router.patch('/profile/logo', uploadImage.single('logo'), sellerController.updateLogo);
 
 // Seller product management
 router.get('/products', sellerController.getSellerProducts);
@@ -30,6 +31,7 @@ router.patch('/products/:id/variants/:vid', productController.updateVariant);
 
 // Seller order management
 router.get('/orders', orderController.getSellerOrders);
+router.patch('/orders/:id/status', orderController.updateOrderStatus);
 router.patch('/orders/:id/items/:itemId/status', orderController.updateOrderItemStatus);
 
 module.exports = router;

@@ -41,7 +41,7 @@ const ProfilePage = () => {
       setAddressForm({ fullName: '', phone: '', addressLine1: '', city: '', state: '', pincode: '' });
       toast.success('Address added');
     } catch (err) {
-      toast.error('Failed to add address');
+      toast.error(err.response?.data?.message || 'Failed to add address');
     }
   };
 
@@ -52,7 +52,7 @@ const ProfilePage = () => {
       setAddresses(addresses.filter(a => a._id !== id));
       toast.success('Address removed');
     } catch (err) {
-      toast.error('Failed to delete address');
+      toast.error(err.response?.data?.message || 'Failed to delete address');
     }
   };
 

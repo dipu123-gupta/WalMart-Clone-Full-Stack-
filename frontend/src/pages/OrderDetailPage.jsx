@@ -53,20 +53,13 @@ const OrderDetailPage = () => {
     }
   };
 
-  const handleDownloadInvoice = async () => {
-    try {
-      const { default: api } = await import('@/services/api');
-      const res = await api.get(`/orders/${order._id}/invoice`, { responseType: 'blob' });
-      const url = window.URL.createObjectURL(new Blob([res.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `Invoice-${order.orderNumber}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    } catch (err) {
-      toast.error('Failed to download invoice');
-    }
+  const handlePrintInvoice = () => {
+    const printContent = document.getElementById('printable-invoice');
+    const originalContent = document.body.innerHTML;
+    document.body.innerHTML = printContent.innerHTML;
+    window.print();
+    document.body.innerHTML = originalContent;
+    window.location.reload(); // Restore state
   };
 
   if (isLoading) return (
@@ -110,10 +103,10 @@ const OrderDetailPage = () => {
         <div className="flex items-center gap-3">
           {order.paymentStatus === 'paid' && (
             <button 
-              onClick={handleDownloadInvoice}
+              onClick={handlePrintInvoice}
               className="flex items-center gap-2 px-4 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-black uppercase tracking-widest hover:bg-black transition-all shadow-lg"
             >
-              <Download size={16} /> Invoice
+              <Download size={16} /> Print Invoice
             </button>
           )}
           <button className="flex items-center gap-2 px-4 py-2.5 bg-white text-slate-800 border-2 border-slate-100 rounded-xl text-sm font-black uppercase tracking-widest hover:bg-slate-50 transition-all">
@@ -148,7 +141,57 @@ const OrderDetailPage = () => {
                  </div>
                ))}
             </div>
-            {/* Status History / Timeline mini-preview could go here */}
+          </div>
+
+          {/* Delivery Timeline Card */}
+          <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm">
+            <h3 className="text-sm font-black text-slate-700 uppercase tracking-widest mb-8 flex items-center gap-2">
+              <Truck size={18} className="text-walmart-blue" />
+              Delivery Progress
+            </h3>
+            
+            <div className="relative">
+              {/* Vertical Line */}
+              <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-slate-100 z-0"></div>
+              
+              <div className="space-y-8 relative z-10">
+                {[
+                  { key: 'ordered', label: 'Order Placed', status: ['pending', 'confirmed', 'processing', 'shipped', 'out_for_delivery', 'delivered'] },
+                  { key: 'confirmed', label: 'Order Confirmed', status: ['confirmed', 'processing', 'shipped', 'out_for_delivery', 'delivered'] },
+                  { key: 'processing', label: 'Processing', status: ['processing', 'shipped', 'out_for_delivery', 'delivered'] },
+                  { key: 'shipped', label: 'Shipped', status: ['shipped', 'out_for_delivery', 'delivered'] },
+                  { key: 'delivered', label: 'Delivered', status: ['delivered'] }
+                ].map((step, index) => {
+                  const isCompleted = step.status.includes(order.orderStatus);
+                  const isCurrent = order.orderStatus === step.key || (index === 0 && order.orderStatus === 'pending');
+                  
+                  return (
+                    <div key={step.key} className="flex items-start gap-6">
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 border-4 transition-all duration-500 ${
+                        isCompleted ? 'bg-green-500 border-green-100 text-white' : 
+                        isCurrent ? 'bg-white border-walmart-blue text-walmart-blue animate-pulse' : 
+                        'bg-white border-slate-100 text-slate-300'
+                      }`}>
+                        {isCompleted ? <CheckCircle size={14} /> : <div className="w-1.5 h-1.5 rounded-full bg-current"></div>}
+                      </div>
+                      <div>
+                        <p className={`text-sm font-black uppercase tracking-wider ${isCompleted || isCurrent ? 'text-slate-800' : 'text-slate-300'}`}>
+                          {step.label}
+                        </p>
+                        {isCompleted && (
+                          <p className="text-[11px] text-slate-500 font-bold mt-1">Successfully completed</p>
+                        )}
+                        {isCurrent && (
+                          <p className="text-[11px] text-walmart-blue font-bold mt-1 flex items-center gap-1">
+                            <Clock size={10} /> Currently in progress
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
 
           {/* Shipping & Payment Card */}

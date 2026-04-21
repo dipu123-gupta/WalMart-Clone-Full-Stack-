@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const Address = require('../models/Address');
+const DeliveryAgent = require('../models/DeliveryAgent');
 const ApiError = require('../utils/ApiError');
 const cloudinary = require('../config/cloudinary');
 const { buildPagination, buildPaginationMeta } = require('../utils/pagination');
@@ -173,6 +174,18 @@ class UserService {
       { new: true, runValidators: true }
     );
     if (!user) throw ApiError.notFound('User not found');
+
+    // Handle DeliveryAgent profile
+    if (role === 'delivery_agent') {
+      const agentProfile = await DeliveryAgent.findOne({ userId });
+      if (!agentProfile) {
+        await DeliveryAgent.create({
+          userId: user._id,
+          isVerified: true, // Auto-verify for now if admin sets it
+        });
+      }
+    }
+
     return user;
   }
 }

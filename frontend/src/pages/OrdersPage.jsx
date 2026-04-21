@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { fetchOrders } from '@/features/orders/orderSlice';
 import { Package, ChevronRight, Clock, CheckCircle, XCircle, Truck } from 'lucide-react';
+import { PLACEHOLDER_IMAGE } from '@/constants';
 
 const statusConfig = {
   pending: { color: 'bg-yellow-100 text-yellow-700', icon: <Clock size={14} /> },
@@ -77,7 +78,7 @@ const OrdersPage = () => {
                 <div className="flex gap-3 overflow-x-auto pb-2">
                   {order.items?.slice(0, 4).map((item, idx) => (
                     <div key={idx} className="w-16 h-16 rounded-lg overflow-hidden bg-gray-50 shrink-0 border">
-                      <img src={item.image || 'https://via.placeholder.com/80'} alt={item.name} className="w-full h-full object-cover" />
+                      <img src={item.image || PLACEHOLDER_IMAGE} alt={item.name} className="w-full h-full object-cover" />
                     </div>
                   ))}
                   {order.items?.length > 4 && (

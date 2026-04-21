@@ -60,10 +60,11 @@ const AdminUsersPage = () => {
       admin: 'bg-red-100 text-red-700 border-red-200',
       seller: 'bg-purple-100 text-purple-700 border-purple-200',
       customer: 'bg-blue-100 text-blue-700 border-blue-200',
+      delivery_agent: 'bg-orange-100 text-orange-700 border-orange-200',
     };
     return (
       <span className={`px-2.5 py-1 text-xs rounded-full font-bold uppercase tracking-wider border ${map[role] || 'bg-slate-100'}`}>
-        {role}
+        {role.replace('_', ' ')}
       </span>
     );
   };
@@ -143,6 +144,7 @@ const AdminUsersPage = () => {
                           <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow-xl bg-base-100 rounded-box w-40 border mt-1">
                             {user.role !== 'customer' && <li onClick={() => updateUserRole(user._id, 'customer')}><a>Demote to Customer</a></li>}
                             {user.role !== 'seller' && <li onClick={() => updateUserRole(user._id, 'seller')}><a>Promote to Seller</a></li>}
+                            {user.role !== 'delivery_agent' && <li onClick={() => updateUserRole(user._id, 'delivery_agent')}><a>Promote to Delivery Agent</a></li>}
                             <li className="text-red-500" onClick={() => updateUserRole(user._id, 'admin')}><a>Make Admin</a></li>
                           </ul>
                         </div>

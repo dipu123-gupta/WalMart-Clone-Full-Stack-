@@ -14,6 +14,7 @@ router.patch('/toggle-availability', deliveryController.toggleAvailability);
 router.patch('/location', deliveryController.updateLocation);
 
 // Task management
+router.get('/history', deliveryController.getDeliveryHistory);
 router.get('/tasks', deliveryController.getMyTasks);
 router.patch('/tasks/:orderId/status', deliveryController.updateDeliveryStatus);
 router.post('/tasks/:orderId/failed', deliveryController.reportFailedDelivery);

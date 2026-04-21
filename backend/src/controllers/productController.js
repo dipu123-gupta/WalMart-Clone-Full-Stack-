@@ -28,6 +28,11 @@ const getRecentlyViewed = asyncHandler(async (req, res) => {
   new ApiResponse(200, 'Recently viewed', products).send(res);
 });
 
+const addToRecentlyViewed = asyncHandler(async (req, res) => {
+  await productService.addToRecentlyViewed(req.user._id, req.body.productId);
+  new ApiResponse(200, 'Added to recently viewed').send(res);
+});
+
 // ===== Seller =====
 const createProduct = asyncHandler(async (req, res) => {
   const product = await productService.createProduct(req.user._id, req.body, req.files || []);
@@ -71,7 +76,7 @@ const getFeaturedProducts = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
-  getProducts, getProductBySlug, searchProducts, getSuggestions, getRecentlyViewed, getFeaturedProducts,
+  getProducts, getProductBySlug, searchProducts, getSuggestions, getRecentlyViewed, addToRecentlyViewed, getFeaturedProducts,
   createProduct, updateProduct, deleteProduct, addVariant, updateVariant,
   approveProduct, getPendingProducts,
 };

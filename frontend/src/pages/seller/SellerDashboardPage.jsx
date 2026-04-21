@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { 
   DollarSign, 
   ShoppingBag, 
@@ -60,7 +61,8 @@ const SellerDashboardPage = () => {
           totalRevenue: dashData.stats?.totalRevenue || 0,
           activeOrders: dashData.stats?.totalOrders || 0,
           totalProducts: dashData.stats?.totalProducts || 0,
-          lowStock: dashData.stats?.lowStock || 0, 
+          lowStock: dashData.stats?.lowStock || 0,
+          lowStockProducts: dashData.stats?.lowStockProducts || [],
         });
 
         const revData = (analyticsRes.data?.data || []).map(item => ({
@@ -158,6 +160,50 @@ const SellerDashboardPage = () => {
             </AreaChart>
           </ResponsiveContainer>
         </div>
+      </div>
+
+      {/* Actionable Low Stock List */}
+      <div className="bg-white rounded-2xl border shadow-sm p-6 overflow-hidden">
+         <div className="flex justify-between items-center mb-6">
+            <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+               <AlertCircle className="text-red-500" /> Action Required: Low Stock
+            </h3>
+            <Link to="/seller/products" className="text-walmart-blue text-xs font-black uppercase hover:underline">Manage All Inventory</Link>
+         </div>
+         
+         <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left">
+               <thead className="bg-slate-50 text-slate-500 font-bold uppercase text-[10px] tracking-widest">
+                  <tr>
+                     <th className="px-4 py-3">Product Name</th>
+                     <th className="px-4 py-3 text-center">In Stock</th>
+                     <th className="px-4 py-3 text-center">Status</th>
+                     <th className="px-4 py-3 text-right">Action</th>
+                  </tr>
+               </thead>
+               <tbody className="divide-y divide-slate-100">
+                  {stats.lowStockProducts?.length > 0 ? stats.lowStockProducts.map((p) => (
+                    <tr key={p._id} className="hover:bg-slate-50/50 transition-colors">
+                       <td className="px-4 py-3 font-semibold text-slate-800">{p.name}</td>
+                       <td className="px-4 py-3 text-center font-bold text-red-500">{p.inventory?.quantity}</td>
+                       <td className="px-4 py-3 text-center">
+                          <span className="px-2 py-0.5 rounded-full bg-red-50 text-red-600 text-[10px] font-black uppercase">Low</span>
+                       </td>
+                       <td className="px-4 py-3 text-right">
+                          <Link to={`/seller/products`} className="text-walmart-blue hover:underline font-bold text-xs">Update</Link>
+                       </td>
+                    </tr>
+                  )) : (
+                    <tr>
+                       <td colSpan="4" className="px-4 py-12 text-center text-slate-400">
+                          <Package className="mx-auto mb-2 opacity-20" size={32} />
+                          All products are sufficiently stocked.
+                       </td>
+                    </tr>
+                  )}
+               </tbody>
+            </table>
+         </div>
       </div>
     </div>
   );

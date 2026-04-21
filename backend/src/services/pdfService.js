@@ -1,6 +1,7 @@
 const PDFDocument = require('pdfkit');
 const Order = require('../models/Order');
 const ApiError = require('../utils/ApiError');
+const env = require('../config/env');
 
 const generateInvoicePDF = async (orderId, userId, res) => {
   const order = await Order.findOne({ _id: orderId, userId }).populate('items.productId');
@@ -14,16 +15,20 @@ const generateInvoicePDF = async (orderId, userId, res) => {
   
   doc.pipe(res);
 
-  // Generic Letterhead
+  // Letterhead — driven by env config
+  const companyName = process.env.COMPANY_NAME || env.CLIENT_URL?.replace(/https?:\/\//, '').split('.')[0] || 'WalMart Clone';
+  const companyAddress = process.env.COMPANY_ADDRESS || '101 Retail Avenue, New Delhi, IND 110001';
+  const supportEmail = process.env.SMTP_FROM_EMAIL || env.SMTP_FROM_EMAIL || 'support@walmart-clone.com';
+
   doc
     .fillColor('#0071dc')
     .fontSize(20)
-    .text('WalMart Clone Store', 50, 50)
+    .text(companyName, 50, 50)
     .fillColor('#444444')
     .fontSize(10)
-    .text('101 Retail Avenue', 50, 75)
-    .text('New Delhi, IND 110001', 50, 90)
-    .text('support@walmart-clone.com', 50, 105)
+    .text(companyAddress.split(',').slice(0, 1).join(''), 50, 75)
+    .text(companyAddress.split(',').slice(1).join(',').trim(), 50, 90)
+    .text(supportEmail, 50, 105)
     .moveDown();
 
   // Invoice Details

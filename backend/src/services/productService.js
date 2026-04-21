@@ -438,7 +438,7 @@ class ProductService {
               sellerId,
               status: 'pending_approval',
               slug: createSlug(row.name, true),
-              images: [{ url: 'https://via.placeholder.com/800', publicId: 'placeholder', isPrimary: true }]
+              images: [{ url: process.env.DEFAULT_PRODUCT_IMAGE || 'https://placehold.co/800x800/e2e8f0/64748b?text=No+Image', publicId: 'placeholder', isPrimary: true }]
             });
           }
         })

@@ -16,18 +16,46 @@ import toast from 'react-hot-toast';
 
 const DeliveryAgentDashboardPage = () => {
   const [tasks, setTasks] = useState([]);
+  const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchTasks();
+    fetchData();
   }, []);
 
-  const fetchTasks = async () => {
+  const fetchData = async () => {
     try {
-      const { data } = await api.get('/delivery-agent/tasks');
-      setTasks(data.data || []);
+      const [tasksRes, profileRes] = await Promise.all([
+        api.get('/delivery-agent/tasks'),
+        api.get('/delivery-agent/profile')
+      ]);
+      setTasks(tasksRes.data?.data || []);
+      setProfile(profileRes.data?.data || null);
     } catch (err) {
-      toast.error('Failed to load tasks');
+      toast.error('Failed to load dashboard data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const requestWithdrawal = async () => {
+    if (!profile || profile.currentBalance < 500) {
+      return toast.error('Minimum withdrawal amount is ₹500');
+    }
+
+    const confirmRequest = window.confirm(`Request payout for ${formatCurrency(profile.currentBalance)}?`);
+    if (!confirmRequest) return;
+
+    try {
+      setLoading(true);
+      await api.post('/payouts/request', {
+        amount: profile.currentBalance,
+        paymentMethod: 'bank_transfer'
+      });
+      toast.success('Withdrawal request submitted!');
+      fetchData();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Withdrawal failed');
     } finally {
       setLoading(false);
     }
@@ -89,9 +117,27 @@ const DeliveryAgentDashboardPage = () => {
             <div className="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600">
                <IndianRupee size={24} />
             </div>
+            <div className="flex-1">
+               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Withdrawable Balance</p>
+               <div className="flex justify-between items-end">
+                  <p className="text-xl font-black text-slate-800">{formatCurrency(profile?.currentBalance || 0)}</p>
+                  <button 
+                    onClick={requestWithdrawal}
+                    disabled={!profile || profile.currentBalance < 500}
+                    className="text-[10px] font-black text-walmart-blue hover:underline uppercase disabled:opacity-30"
+                  >
+                    Withdraw
+                  </button>
+               </div>
+            </div>
+         </div>
+         <div className="bg-white p-5 rounded-2xl border shadow-sm flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center text-green-600">
+               <CheckCircle2 size={24} />
+            </div>
             <div>
-               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Earned Today</p>
-               <p className="text-xl font-black text-slate-800">₹850</p>
+               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Total Earnings</p>
+               <p className="text-xl font-black text-slate-800">{formatCurrency(profile?.totalEarnings || 0)}</p>
             </div>
          </div>
       </div>

@@ -46,6 +46,18 @@ const deliveryAgentSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    totalEarnings: {
+      type: Number,
+      default: 0,
+    },
+    currentBalance: {
+      type: Number,
+      default: 0,
+    },
+    paidAmount: {
+      type: Number,
+      default: 0,
+    },
     rating: {
       type: Number,
       default: 5,
@@ -64,7 +76,6 @@ const deliveryAgentSchema = new mongoose.Schema(
 
 deliveryAgentSchema.index({ currentLocation: '2dsphere' });
 deliveryAgentSchema.index({ isAvailable: 1, activeOrderCount: 1 });
-deliveryAgentSchema.index({ userId: 1 });
 
 const DeliveryAgent = mongoose.model('DeliveryAgent', deliveryAgentSchema);
 

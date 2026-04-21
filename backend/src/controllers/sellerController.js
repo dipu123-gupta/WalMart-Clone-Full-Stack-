@@ -18,40 +18,64 @@ const registerSeller = asyncHandler(async (req, res) => {
 });
 
 const getSellerDashboard = asyncHandler(async (req, res) => {
-  const seller = await Seller.findOne({ userId: req.user._id });
-  if (!seller) throw ApiError.notFound('Seller profile not found');
+  const mongoose = require('mongoose');
+  const sellerId = new mongoose.Types.ObjectId(req.user._id);
 
-    const Inventory = require('../models/Inventory');
-    const [totalProducts, activeProducts, totalOrders, recentOrders, revenue, lowStock] = await Promise.all([
-      Product.countDocuments({ sellerId: req.user._id }),
-      Product.countDocuments({ sellerId: req.user._id, status: 'active' }),
-      Order.countDocuments({ 'items.sellerId': req.user._id }),
-      Order.find({ 'items.sellerId': req.user._id })
-        .sort({ createdAt: -1 })
-        .limit(10)
-        .select('orderNumber orderStatus pricing createdAt')
-        .lean(),
-      Order.aggregate([
-        { $match: { 'items.sellerId': req.user._id, paymentStatus: 'paid' } },
-        { $group: { _id: null, total: { $sum: '$pricing.total' } } },
-      ]),
-      Inventory.countDocuments({
-        sellerId: req.user._id,
-        $expr: { $lt: ['$quantity', '$lowStockThreshold'] }
-      })
-    ]);
+  // Auto-create seller profile if first time
+  let seller = await Seller.findOne({ userId: sellerId });
+  if (!seller) {
+    seller = await Seller.create({
+      userId: sellerId,
+      businessName: `${req.user.firstName}'s Store`,
+      status: 'pending',
+    });
+  }
 
-    new ApiResponse(200, 'Dashboard data', {
-      seller,
-      stats: {
-        totalProducts,
-        activeProducts,
-        totalOrders,
-        totalRevenue: revenue[0]?.total || 0,
-        lowStock: lowStock || 0
-      },
-      recentOrders,
-    }).send(res);
+  const Inventory = require('../models/Inventory');
+  const [totalProducts, activeProducts, totalOrders, recentOrders, revenue, lowStockCount, lowStockProducts] = await Promise.all([
+    Product.countDocuments({ sellerId }),
+    Product.countDocuments({ sellerId, status: 'active' }),
+    Order.countDocuments({ 'items.sellerId': sellerId }),
+    Order.find({ 'items.sellerId': sellerId })
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .select('orderNumber orderStatus pricing createdAt')
+      .lean(),
+    Order.aggregate([
+      { $match: { 'items.sellerId': sellerId, paymentStatus: 'paid' } },
+      { $unwind: '$items' },
+      { $match: { 'items.sellerId': sellerId } },
+      { $group: { _id: null, total: { $sum: '$items.total' } } },
+    ]),
+    Inventory.countDocuments({
+      sellerId,
+      $expr: { $lt: ['$quantity', '$lowStockThreshold'] },
+    }),
+    Inventory.find({
+      sellerId,
+      $expr: { $lt: ['$quantity', '$lowStockThreshold'] },
+    })
+      .populate('productId', 'name')
+      .limit(10)
+      .lean(),
+  ]);
+
+  new ApiResponse(200, 'Dashboard data', {
+    seller,
+    stats: {
+      totalProducts,
+      activeProducts,
+      totalOrders,
+      totalRevenue: revenue[0]?.total || 0,
+      lowStock: lowStockCount || 0,
+      lowStockProducts: lowStockProducts.map((inv) => ({
+        _id: inv.productId?._id,
+        name: inv.productId?.name || 'Unknown',
+        inventory: { quantity: inv.quantity },
+      })),
+    },
+    recentOrders,
+  }).send(res);
 });
 
 const getSellerProducts = asyncHandler(async (req, res) => {
@@ -132,28 +156,34 @@ const setCommission = asyncHandler(async (req, res) => {
 });
 
 const getSellerAnalytics = asyncHandler(async (req, res) => {
+  const mongoose = require('mongoose');
+  const sellerId = new mongoose.Types.ObjectId(req.user._id);
+
   const { period = '30d' } = req.query;
   let days = 30;
   if (period === '7d') days = 7;
-  
+  if (period === '90d') days = 90;
+
   const startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
 
   const analytics = await Order.aggregate([
     {
       $match: {
-        'items.sellerId': req.user._id,
+        'items.sellerId': sellerId,
         createdAt: { $gte: startDate },
-        paymentStatus: { $in: ['paid', 'partially_refunded'] }
-      }
+        paymentStatus: { $in: ['paid', 'partially_refunded'] },
+      },
     },
+    { $unwind: '$items' },
+    { $match: { 'items.sellerId': sellerId } },
     {
       $group: {
         _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
-        revenue: { $sum: '$pricing.total' }, // Note: In a true multi-vendor, this should sum only items belonging to seller
-        orders: { $sum: 1 }
-      }
+        revenue: { $sum: '$items.total' },
+        orders: { $sum: 1 },
+      },
     },
-    { $sort: { _id: 1 } }
+    { $sort: { _id: 1 } },
   ]);
 
   new ApiResponse(200, 'Seller analytics', analytics).send(res);
@@ -166,13 +196,47 @@ const getSellerProfile = asyncHandler(async (req, res) => {
 });
 
 const updateSellerProfile = asyncHandler(async (req, res) => {
+  const { businessName, description, supportEmail, payoutDetails } = req.body;
+  
+  const updateData = {
+    businessName,
+    description,
+    supportEmail
+  };
+
+  // Map frontend's payoutDetails to backend's bankDetails
+  if (payoutDetails) {
+    updateData.bankDetails = {
+      accountName: payoutDetails.accountName,
+      accountNumber: payoutDetails.accountNumber,
+      ifscCode: payoutDetails.ifscCode
+    };
+  }
+
   const seller = await Seller.findOneAndUpdate(
     { userId: req.user._id },
-    req.body,
+    updateData,
     { new: true, runValidators: true }
   );
+
   if (!seller) throw ApiError.notFound('Seller profile not found');
   new ApiResponse(200, 'Seller profile updated', seller).send(res);
+});
+
+const updateLogo = asyncHandler(async (req, res) => {
+  if (!req.file) throw ApiError.badRequest('Logo file is required');
+
+  const seller = await Seller.findOne({ userId: req.user._id });
+  if (!seller) throw ApiError.notFound('Seller profile not found');
+
+  // New logo from Cloudinary (via middleware)
+  seller.logo = {
+    url: req.file.path,
+    publicId: req.file.filename
+  };
+
+  await seller.save();
+  new ApiResponse(200, 'Logo updated successfully', seller.logo).send(res);
 });
 
 module.exports = { 
@@ -186,4 +250,5 @@ module.exports = {
   getSellerProducts,
   getSellerProfile,
   updateSellerProfile,
+  updateLogo,
 };
