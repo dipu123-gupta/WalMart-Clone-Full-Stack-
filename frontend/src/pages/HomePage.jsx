@@ -465,16 +465,16 @@ const HomePage = () => {
             <h2 className="text-4xl md:text-5xl font-black tracking-tight leading-none">MEMBERS GET MORE.</h2>
             <p className="text-blue-100 font-medium max-w-lg mx-auto">Get free delivery, secret deals, and faster checkout by joining our newsletter community.</p>
           </div>
-          <form className="flex max-w-xl mx-auto gap-2 bg-white p-1.5 rounded-full shadow-2xl" onSubmit={handleSubscribe}>
+          <form className="flex flex-col sm:flex-row w-full max-w-xl mx-auto gap-4 sm:gap-2 sm:bg-white sm:p-1.5 sm:rounded-full sm:shadow-2xl" onSubmit={handleSubscribe}>
             <input 
               type="email" 
-              placeholder="Enter your email to get started" 
+              placeholder="Enter email to get started" 
               required
               value={subscriberEmail}
               onChange={(e) => setSubscriberEmail(e.target.value)}
-              className="flex-1 px-8 py-3 rounded-full bg-transparent text-slate-900 outline-none font-bold" 
+              className="flex-1 px-6 sm:px-8 py-4 sm:py-3 rounded-full bg-white sm:bg-transparent text-slate-900 outline-none font-bold shadow-xl sm:shadow-none min-w-0" 
             />
-            <button type="submit" disabled={isSubscribing} className="bg-slate-900 text-white px-10 py-3 rounded-full font-black text-xs uppercase tracking-widest hover:bg-walmart-blue hover:-translate-x-1 transition-all disabled:opacity-50">
+            <button type="submit" disabled={isSubscribing} className="bg-slate-900 text-white px-8 sm:px-10 py-4 sm:py-3 rounded-full font-black text-xs uppercase tracking-widest hover:bg-walmart-blue transition-all disabled:opacity-50 shadow-xl sm:shadow-none shrink-0 whitespace-nowrap">
               {isSubscribing ? '...' : 'Unlock Now'}
             </button>
           </form>
