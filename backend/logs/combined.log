@@ -8105,3 +8105,182 @@ Error: Product not found
     at ProductService.getProductBySlug (C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\services\productService.js:107:34)
     at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
     at async C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\controllers\productController.js:12:19 {"service":"walmart-api","url":"/api/v1/products/69e72c7e578f61164fc2985d","method":"GET","ip":"::1"}
+2026-04-22 09:50:55 [INFO]: Cloudinary connected {"service":"walmart-api"}
+2026-04-22 09:50:56 [INFO]: MongoDB Connected: ac-cppwx0p-shard-00-00.vg2kowd.mongodb.net/Walmart {"service":"walmart-api"}
+2026-04-22 09:50:56 [INFO]: Event handlers registered {"service":"walmart-api"}
+2026-04-22 09:50:56 [INFO]: [OrderCleanup] Job scheduled — running every 15 minutes. {"service":"walmart-api"}
+2026-04-22 09:50:56 [INFO]: 🚀 Socket.IO Server initialized successfully {"service":"walmart-api"}
+2026-04-22 09:50:56 [INFO]: 
+    ╔══════════════════════════════════════════════╗
+    ║  🛒 WalMart Clone API Server                ║
+    ║  Environment: development                   ║
+    ║  Port: 5000                                 ║
+    ║  URL: http://localhost:5000                  ║
+    ╚══════════════════════════════════════════════╝
+     {"service":"walmart-api"}
+2026-04-22 09:51:04 [INFO]: SMTP connection verified {"service":"walmart-api"}
+2026-04-22 09:51:18 [ERROR]: Cannot read properties of null (reading 'items')
+TypeError: Cannot read properties of null (reading 'items')
+    at CartService._validateCartItems (C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\services\cartService.js:259:29)
+    at CartService.getCart (C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\services\cartService.js:51:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\controllers\cartController.js:8:16 {"service":"walmart-api","url":"/api/v1/cart","method":"GET","ip":"::1"}
+2026-04-22 09:51:19 [ERROR]: Cannot read properties of null (reading 'items')
+TypeError: Cannot read properties of null (reading 'items')
+    at CartService._validateCartItems (C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\services\cartService.js:259:29)
+    at CartService.getCart (C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\services\cartService.js:51:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\controllers\cartController.js:8:16 {"service":"walmart-api","url":"/api/v1/cart","method":"GET","ip":"::1"}
+2026-04-22 09:51:19 [DEBUG]: Cache MISS: categories:tree {"service":"walmart-api"}
+2026-04-22 09:51:19 [ERROR]: Product not found
+Error: Product not found
+    at ApiError.notFound (C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\utils\ApiError.js:32:12)
+    at ProductService.getProductBySlug (C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\services\productService.js:107:34)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\controllers\productController.js:12:19 {"service":"walmart-api","url":"/api/v1/products/69e72bef578f61164fc29857","method":"GET","ip":"::1"}
+2026-04-22 09:51:19 [INFO]: Cache hit for /api/v1/categories {"service":"walmart-api"}
+2026-04-22 09:51:19 [INFO]: Cache hit for /api/v1/products/featured?limit=8 {"service":"walmart-api"}
+2026-04-22 09:51:19 [ERROR]: Product not found
+Error: Product not found
+    at ApiError.notFound (C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\utils\ApiError.js:32:12)
+    at ProductService.getProductBySlug (C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\services\productService.js:107:34)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\controllers\productController.js:12:19 {"service":"walmart-api","url":"/api/v1/products/69e72bef578f61164fc29857","method":"GET","ip":"::1"}
+2026-04-22 09:51:19 [INFO]: Cache hit for /api/v1/products?limit=12 {"service":"walmart-api"}
+2026-04-22 09:51:19 [ERROR]: Product not found
+Error: Product not found
+    at ApiError.notFound (C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\utils\ApiError.js:32:12)
+    at ProductService.getProductBySlug (C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\services\productService.js:107:34)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\controllers\productController.js:12:19 {"service":"walmart-api","url":"/api/v1/products/69e72c38578f61164fc2985a","method":"GET","ip":"::1"}
+2026-04-22 09:51:20 [ERROR]: Product not found
+Error: Product not found
+    at ApiError.notFound (C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\utils\ApiError.js:32:12)
+    at ProductService.getProductBySlug (C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\services\productService.js:107:34)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\controllers\productController.js:12:19 {"service":"walmart-api","url":"/api/v1/products/69e72c38578f61164fc2985a","method":"GET","ip":"::1"}
+2026-04-22 09:51:20 [ERROR]: Product not found
+Error: Product not found
+    at ApiError.notFound (C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\utils\ApiError.js:32:12)
+    at ProductService.getProductBySlug (C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\services\productService.js:107:34)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\controllers\productController.js:12:19 {"service":"walmart-api","url":"/api/v1/products/69e72c7e578f61164fc2985d","method":"GET","ip":"::1"}
+2026-04-22 09:51:20 [ERROR]: Product not found
+Error: Product not found
+    at ApiError.notFound (C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\utils\ApiError.js:32:12)
+    at ProductService.getProductBySlug (C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\services\productService.js:107:34)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\controllers\productController.js:12:19 {"service":"walmart-api","url":"/api/v1/products/69e72c7e578f61164fc2985d","method":"GET","ip":"::1"}
+2026-04-22 09:52:39 [ERROR]: Access token expired
+Error: Access token expired
+    at ApiError.unauthorized (C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\utils\ApiError.js:24:12)
+    at authenticate (C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\middlewares\authMiddleware.js:53:28)
+    at Layer.handleRequest (C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\lib\route.js:157:13)
+    at Route.dispatch (C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\lib\route.js:117:3)
+    at handle (C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\index.js:435:11)
+    at Layer.handleRequest (C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\lib\layer.js:152:17)
+    at C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\index.js:295:15
+    at processParams (C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\index.js:582:12)
+    at next (C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\index.js:291:5) {"service":"walmart-api","url":"/api/v1/users/me","method":"GET","ip":"::1"}
+2026-04-22 09:52:39 [ERROR]: Access token expired
+Error: Access token expired
+    at ApiError.unauthorized (C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\utils\ApiError.js:24:12)
+    at authenticate (C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\middlewares\authMiddleware.js:53:28)
+    at Layer.handleRequest (C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\lib\route.js:157:13)
+    at Route.dispatch (C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\lib\route.js:117:3)
+    at handle (C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\index.js:435:11)
+    at Layer.handleRequest (C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\lib\layer.js:152:17)
+    at C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\index.js:295:15
+    at processParams (C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\index.js:582:12)
+    at next (C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\index.js:291:5) {"service":"walmart-api","url":"/api/v1/users/me","method":"GET","ip":"::1"}
+2026-04-22 09:52:39 [ERROR]: Cannot read properties of null (reading 'items')
+TypeError: Cannot read properties of null (reading 'items')
+    at CartService._validateCartItems (C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\services\cartService.js:259:29)
+    at CartService.getCart (C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\services\cartService.js:51:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\controllers\cartController.js:8:16 {"service":"walmart-api","url":"/api/v1/cart","method":"GET","ip":"::1"}
+2026-04-22 09:52:40 [ERROR]: Cannot read properties of null (reading 'items')
+TypeError: Cannot read properties of null (reading 'items')
+    at CartService._validateCartItems (C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\services\cartService.js:259:29)
+    at CartService.getCart (C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\services\cartService.js:51:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\controllers\cartController.js:8:16 {"service":"walmart-api","url":"/api/v1/cart","method":"GET","ip":"::1"}
+2026-04-22 09:52:40 [INFO]: 🔌 Socket connected: pqfyXqGUI5uyFso_AAAB (User: 69e719479390936dd884b3c1, Role: customer) {"service":"walmart-api"}
+2026-04-22 09:52:40 [INFO]: 🔌 Socket disconnected: pqfyXqGUI5uyFso_AAAB {"service":"walmart-api"}
+2026-04-22 09:52:40 [INFO]: 🔌 Socket connected: tzLvK3CMGdZRfk5dAAAD (User: 69e719479390936dd884b3c1, Role: customer) {"service":"walmart-api"}
+2026-04-22 09:52:40 [INFO]: Cache hit for /api/v1/categories {"service":"walmart-api"}
+2026-04-22 09:52:40 [INFO]: Cache hit for /api/v1/products/featured?limit=8 {"service":"walmart-api"}
+2026-04-22 09:52:40 [INFO]: Cache hit for /api/v1/products?limit=12 {"service":"walmart-api"}
+2026-04-22 09:52:40 [INFO]: Cache hit for /api/v1/categories {"service":"walmart-api"}
+2026-04-22 09:52:40 [INFO]: Cache hit for /api/v1/products/featured?limit=8 {"service":"walmart-api"}
+2026-04-22 09:52:40 [INFO]: Cache hit for /api/v1/products?limit=12 {"service":"walmart-api"}
+2026-04-22 09:52:45 [INFO]: Cache hit for /api/v1/products?page=1&limit=12&sort=createdAt:desc {"service":"walmart-api"}
+2026-04-22 09:52:49 [ERROR]: Route not found: GET /api/v1/reviews/products/69e72cce578f61164fc29860/reviews
+Error: Route not found: GET /api/v1/reviews/products/69e72cce578f61164fc29860/reviews
+    at ApiError.notFound (C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\utils\ApiError.js:32:12)
+    at notFoundHandler (C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\middlewares\errorHandler.js:73:17)
+    at Layer.handleRequest (C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\lib\layer.js:152:17)
+    at trimPrefix (C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\index.js:342:13)
+    at C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\index.js:297:9
+    at processParams (C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\index.js:582:12)
+    at next (C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\index.js:291:5)
+    at C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\index.js:688:15
+    at next (C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\index.js:276:14)
+    at C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\index.js:688:15 {"service":"walmart-api","url":"/api/v1/reviews/products/69e72cce578f61164fc29860/reviews","method":"GET","ip":"::1"}
+2026-04-22 09:52:49 [ERROR]: Route not found: GET /api/v1/questions/products/69e72cce578f61164fc29860
+Error: Route not found: GET /api/v1/questions/products/69e72cce578f61164fc29860
+    at ApiError.notFound (C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\utils\ApiError.js:32:12)
+    at notFoundHandler (C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\middlewares\errorHandler.js:73:17)
+    at Layer.handleRequest (C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\lib\layer.js:152:17)
+    at trimPrefix (C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\index.js:342:13)
+    at C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\index.js:297:9
+    at processParams (C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\index.js:582:12)
+    at next (C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\index.js:291:5)
+    at C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\index.js:688:15
+    at next (C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\index.js:276:14)
+    at C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\index.js:688:15 {"service":"walmart-api","url":"/api/v1/questions/products/69e72cce578f61164fc29860","method":"GET","ip":"::1"}
+2026-04-22 09:52:49 [ERROR]: productService.addToRecentlyViewed is not a function
+TypeError: productService.addToRecentlyViewed is not a function
+    at C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\controllers\productController.js:32:24
+    at C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\middlewares\asyncHandler.js:5:19
+    at Layer.handleRequest (C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\lib\route.js:157:13)
+    at authenticate (C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\middlewares\authMiddleware.js:47:5)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5) {"service":"walmart-api","url":"/api/v1/products/recent","method":"POST","ip":"::1"}
+2026-04-22 09:52:49 [ERROR]: Route not found: GET /api/v1/reviews/products/69e72cce578f61164fc29860/reviews
+Error: Route not found: GET /api/v1/reviews/products/69e72cce578f61164fc29860/reviews
+    at ApiError.notFound (C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\utils\ApiError.js:32:12)
+    at notFoundHandler (C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\middlewares\errorHandler.js:73:17)
+    at Layer.handleRequest (C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\lib\layer.js:152:17)
+    at trimPrefix (C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\index.js:342:13)
+    at C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\index.js:297:9
+    at processParams (C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\index.js:582:12)
+    at next (C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\index.js:291:5)
+    at C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\index.js:688:15
+    at next (C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\index.js:276:14)
+    at C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\index.js:688:15 {"service":"walmart-api","url":"/api/v1/reviews/products/69e72cce578f61164fc29860/reviews","method":"GET","ip":"::1"}
+2026-04-22 09:52:49 [ERROR]: Route not found: GET /api/v1/questions/products/69e72cce578f61164fc29860
+Error: Route not found: GET /api/v1/questions/products/69e72cce578f61164fc29860
+    at ApiError.notFound (C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\utils\ApiError.js:32:12)
+    at notFoundHandler (C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\middlewares\errorHandler.js:73:17)
+    at Layer.handleRequest (C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\lib\layer.js:152:17)
+    at trimPrefix (C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\index.js:342:13)
+    at C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\index.js:297:9
+    at processParams (C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\index.js:582:12)
+    at next (C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\index.js:291:5)
+    at C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\index.js:688:15
+    at next (C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\index.js:276:14)
+    at C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\index.js:688:15 {"service":"walmart-api","url":"/api/v1/questions/products/69e72cce578f61164fc29860","method":"GET","ip":"::1"}
+2026-04-22 09:52:49 [INFO]: Cache hit for /api/v1/products?category=undefined&limit=5 {"service":"walmart-api"}
+2026-04-22 09:52:49 [ERROR]: productService.addToRecentlyViewed is not a function
+TypeError: productService.addToRecentlyViewed is not a function
+    at C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\controllers\productController.js:32:24
+    at C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\middlewares\asyncHandler.js:5:19
+    at Layer.handleRequest (C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\asus\OneDrive\Desktop\WalMart\backend\node_modules\router\lib\route.js:157:13)
+    at authenticate (C:\Users\asus\OneDrive\Desktop\WalMart\backend\src\middlewares\authMiddleware.js:47:5)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5) {"service":"walmart-api","url":"/api/v1/products/recent","method":"POST","ip":"::1"}
+2026-04-22 09:53:07 [INFO]: Email sent: <991ff693-dfb1-d4a2-6bf2-3b305355f1b4@gmail.com> to kumardipu845420@gmail.com {"service":"walmart-api"}
+2026-04-22 09:53:07 [INFO]: Order placed notification sent for WM-20260422-931EED {"service":"walmart-api"}

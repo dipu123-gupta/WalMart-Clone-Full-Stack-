@@ -8,6 +8,7 @@ import { Star, Heart, ShoppingCart, Truck, Shield, RotateCcw, Minus, Plus, Chevr
 import toast from 'react-hot-toast';
 import { optimizeCloudinaryUrl } from '@/utils/imageOptimizer';
 import { formatCurrency, formatDate } from '@/utils/helpers';
+import api from '@/services/api';
 
 const ProductDetailPage = () => {
   const { slug } = useParams();
@@ -54,7 +55,6 @@ const ProductDetailPage = () => {
        if (isAuthenticated) {
           const syncRecent = async () => {
              try {
-                const { default: api } = await import('@/services/api');
                 await api.post(`/products/recent`, { productId: product._id });
              } catch (err) { /* ignore */ }
           };
@@ -72,7 +72,6 @@ const ProductDetailPage = () => {
   const fetchReviews = async () => {
     if (!product?._id) return;
     try {
-      const { default: api } = await import('@/services/api');
       const res = await api.get(`/reviews/products/${product._id}/reviews`);
       setReviews(res.data?.data || []);
     } catch (err) { } finally { setLoadingReviews(false); }
@@ -81,7 +80,6 @@ const ProductDetailPage = () => {
   const fetchQA = async () => {
     if (!product?._id) return;
     try {
-      const { default: api } = await import('@/services/api');
       const res = await api.get(`/questions/products/${product._id}`);
       setQuestions(res.data?.data || []);
     } catch (err) { } finally { setLoadingQA(false); }
@@ -90,7 +88,6 @@ const ProductDetailPage = () => {
   const fetchSimilarProducts = async () => {
     if (!product?._id) return;
     try {
-      const { default: api } = await import('@/services/api');
       const res = await api.get(`/products?category=${product.category}&limit=5`);
       setSimilarProducts(res.data?.data?.filter(p => p._id !== product._id) || []);
     } catch (err) { } finally { setLoadingSimilar(false); }
@@ -108,7 +105,6 @@ const ProductDetailPage = () => {
     if (!formTitle || !formComment) return toast.error('Please fill in all fields');
     setIsSubmittingReview(true);
     try {
-      const { default: api } = await import('@/services/api');
       const res = await api.post(`/reviews/products/${product._id}/reviews`, {
         rating: formRating, title: formTitle, comment: formComment
       });
@@ -126,7 +122,6 @@ const ProductDetailPage = () => {
     if (formQuestion.length < 10) return;
     setIsSubmittingQA(true);
     try {
-      const { default: api } = await import('@/services/api');
       const res = await api.post(`/products/questions`, {
         productId: product._id, question: formQuestion
       });
