@@ -7,6 +7,7 @@ import { getProfile } from './features/auth/authSlice';
 import { fetchCart } from './features/cart/cartSlice';
 import { fetchWishlist } from './features/wishlist/wishlistSlice';
 import { fetchNotifications } from './features/notifications/notificationSlice';
+import { fetchSettings } from './features/settings/settingsSlice';
 import { useSocket } from './hooks/useSocket';
 import { Toaster, toast } from 'react-hot-toast';
 
@@ -21,6 +22,9 @@ const AppInitializer = () => {
     if (token) {
       dispatch(getProfile());
     }
+    // Fetch platform configurations
+    dispatch(fetchSettings());
+
     // Generate guest session ID
     if (!localStorage.getItem('sessionId')) {
       localStorage.setItem('sessionId', 'guest_' + Math.random().toString(36).substring(2, 15));

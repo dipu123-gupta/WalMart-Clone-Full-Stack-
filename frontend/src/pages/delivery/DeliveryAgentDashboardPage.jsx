@@ -65,7 +65,7 @@ const DeliveryAgentDashboardPage = () => {
     try {
       await api.patch(`/delivery-agent/tasks/${orderId}/status`, { status });
       toast.success(`Order marked as ${status}`);
-      fetchTasks();
+      fetchData();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Status update failed');
     }

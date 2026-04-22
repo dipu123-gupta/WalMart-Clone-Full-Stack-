@@ -18,7 +18,8 @@ import {
   TrendingUp,
   Store,
   GitCompare,
-  Truck
+  Truck,
+  Home
 } from 'lucide-react';
 import { logout } from '@/features/auth/authSlice';
 import { setQuery, setSuggestions, clearSearch, addRecentSearch, setSearchOpen } from '@/features/search/searchSlice';
@@ -52,6 +53,8 @@ const Navbar = () => {
   const handleSearch = useCallback((e) => {
     const value = e.target.value;
     dispatch(setQuery(value));
+    
+    if (!isOpen) dispatch(setSearchOpen(true));
 
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
@@ -95,8 +98,9 @@ const Navbar = () => {
 
   // Close dropdown on outside click
   useEffect(() => {
-    const handleClickOutside = (e) => {
+  const handleClickOutside = (e) => {
       if (searchRef.current && !searchRef.current.contains(e.target)) {
+        dispatch(setSearchOpen(false));
         dispatch(setSuggestions([]));
       }
       if (!e.target.closest('.profile-dropdown')) setProfileOpen(false);
@@ -106,14 +110,14 @@ const Navbar = () => {
   }, [dispatch]);
 
   return (
-    <header className={`sticky top-0 z-[100] transition-all duration-300 ${scrolled ? 'py-1 shadow-2xl' : 'py-0'}`}>
-      {/* Dynamic Background */}
-      <div className={`absolute inset-0 transition-opacity duration-300 ${scrolled ? 'glass' : 'bg-white border-b'}`} />
+    <>
+    <header className={`sticky top-0 z-[100] transition-all duration-500 ease-in-out ${scrolled ? 'translate-y-0' : 'translate-y-0'}`}>
+      {/* Background with Glass Effect */}
+      <div className={`absolute inset-0 transition-all duration-500 ${scrolled ? 'glass shadow-xl' : 'bg-white border-b'}`} />
 
-      {/* Top Banner - Sleek & Narrow */}
-      {!scrolled && (
-        <div className="relative gradient-primary text-white overflow-hidden">
-          <div className="max-w-7xl mx-auto px-6 py-1.5 flex justify-between items-center text-[11px] font-bold uppercase tracking-wider">
+      {/* Top Banner - Fixed height container to prevent jumping */}
+      <div className={`relative gradient-primary text-white overflow-hidden transition-all duration-500 ease-in-out ${scrolled ? 'max-h-0' : 'max-h-10'}`}>
+        <div className="max-w-7xl mx-auto px-6 py-1.5 flex justify-between items-center text-[10px] font-bold uppercase tracking-widest">
             <div className="flex items-center gap-6">
               <span className="flex items-center gap-1.5 opacity-90"><MapPin size={12} className="text-walmart-yellow" /> Delivery to Mumbai 400001</span>
               <span className="w-1 h-1 bg-white/30 rounded-full hidden sm:block"></span>
@@ -128,8 +132,7 @@ const Navbar = () => {
               <span className="opacity-90">Help Center</span>
             </div>
           </div>
-        </div>
-      )}
+      </div>
 
       {/* Main Bar */}
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-3 md:py-4">
@@ -363,33 +366,82 @@ const Navbar = () => {
           </div>
         </div>
       </div>
-
-      {/* Mobile Drawer Overlay */}
-      <div className={`md:hidden fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-300 ${mobileMenuOpen ? 'opacity-100 z-[90]' : 'opacity-0 pointer-events-none'}`} onClick={() => setMobileMenuOpen(false)} />
-      
-      {/* Mobile Navigation Drawer */}
-      <div className={`md:hidden fixed top-0 left-0 bottom-0 w-4/5 max-w-sm bg-white z-[101] shadow-2xl transition-transform duration-500 ease-out ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-         <div className="p-6 h-full flex flex-col">
-            <div className="flex items-center justify-between mb-10">
-               <Logo className="h-8" />
-               <button onClick={() => setMobileMenuOpen(false)} className="p-2 bg-gray-100 rounded-full"><X size={20}/></button>
-            </div>
-            
-            <nav className="flex-1 space-y-2">
-               <MobileLink to="/" label="Home" onClick={() => setMobileMenuOpen(false)} />
-               <MobileLink to="/products" label="Shop All" onClick={() => setMobileMenuOpen(false)} />
-               <MobileLink to="/wishlist" label="My Wishlist" onClick={() => setMobileMenuOpen(false)} />
-               <MobileLink to="/orders" label="My Orders" onClick={() => setMobileMenuOpen(false)} />
-            </nav>
-
-            {!isAuthenticated && (
-              <Link to="/login" className="mt-auto w-full py-4 gradient-primary text-white rounded-2xl font-black text-center shadow-lg" onClick={() => setMobileMenuOpen(false)}>
-                 SIGN IN / REGISTER
-              </Link>
-            )}
-         </div>
-      </div>
     </header>
+
+    {/* Mobile Navigation - Moved outside header to prevent stacking/clipping issues */}
+    <div className="md:hidden">
+       {/* Overlay */}
+       <div 
+         className={`fixed inset-0 bg-slate-900/60 backdrop-blur-md transition-opacity duration-500 ${mobileMenuOpen ? 'opacity-100 z-[200]' : 'opacity-0 pointer-events-none'}`} 
+         style={{ touchAction: mobileMenuOpen ? 'none' : 'auto' }}
+         onClick={() => setMobileMenuOpen(false)} 
+       />
+       
+       {/* Side Drawer */}
+       <div className={`fixed top-0 left-0 bottom-0 w-4/5 max-w-sm bg-white z-[210] shadow-2xl transition-transform duration-500 ease-out ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+          <div className="p-6 h-full flex flex-col">
+             <div className="flex items-center justify-between mb-10 pt-2">
+                <Logo className="h-10" />
+                <button 
+                  onClick={() => setMobileMenuOpen(false)} 
+                  className="w-10 h-10 flex items-center justify-center bg-slate-100/80 rounded-full text-slate-800"
+                >
+                  <X size={20} strokeWidth={3} />
+                </button>
+             </div>
+             
+             <nav className="flex-1 overflow-y-auto">
+                <div className="space-y-1">
+                   <MobileLink to="/" label="Home" onClick={() => setMobileMenuOpen(false)} />
+                   <MobileLink to="/products" label="Shop All" onClick={() => setMobileMenuOpen(false)} />
+                   <MobileLink to="/wishlist" label="My Wishlist" onClick={() => setMobileMenuOpen(false)} />
+                   <MobileLink to="/orders" label="My Orders" onClick={() => setMobileMenuOpen(false)} />
+                </div>
+
+                {/* Sub-links section for privilege roles */}
+                {isAuthenticated && (user?.role !== 'user') && (
+                  <div className="mt-8 pt-6 border-t border-slate-100">
+                     <p className="text-[10px] uppercase font-black text-slate-400 tracking-widest mb-4">Management Hub</p>
+                     <div className="space-y-1 opacity-70">
+                        {user?.role === 'admin' && (
+                          <Link to="/admin/dashboard" className="block py-2 text-sm font-bold text-slate-600" onClick={() => setMobileMenuOpen(false)}>Admin Core</Link>
+                        )}
+                        {user?.role === 'seller' && (
+                          <Link to="/seller/dashboard" className="block py-2 text-sm font-bold text-slate-600" onClick={() => setMobileMenuOpen(false)}>Seller Hub</Link>
+                        )}
+                        {user?.role === 'delivery_agent' && (
+                          <Link to="/delivery/dashboard" className="block py-2 text-sm font-bold text-slate-600" onClick={() => setMobileMenuOpen(false)}>Delivery Taskbar</Link>
+                        )}
+                     </div>
+                  </div>
+                )}
+             </nav>
+
+             {!isAuthenticated ? (
+               <div className="mt-auto pb-8">
+                 <Link 
+                   to="/login" 
+                   className="w-full py-4 bg-walmart-blue text-white rounded-2xl font-bold text-center shadow-lg uppercase tracking-widest text-[13px] flex items-center justify-center" 
+                   onClick={() => setMobileMenuOpen(false)}
+                 >
+                    SIGN IN / REGISTER
+                 </Link>
+               </div>
+             ) : (
+               <div className="mt-auto pb-8">
+                 <button 
+                   onClick={handleLogout} 
+                   className="w-full py-4 border-2 border-slate-100 text-slate-500 rounded-2xl font-bold text-center uppercase tracking-widest text-[11px] transition-all active:scale-95"
+                 >
+                    TERMINATE SESSION
+                 </button>
+               </div>
+             )}
+          </div>
+       </div>
+    </div>
+</>
+
   );
 };
 
@@ -401,9 +453,17 @@ const MenuItem = ({ to, icon, label, onClick }) => (
   </Link>
 );
 
+
 const MobileLink = ({ to, label, onClick }) => (
-  <Link to={to} className="block py-4 text-xl font-black border-b border-gray-50 hover:text-walmart-blue transition-colors" onClick={onClick}>
-    {label}
+  <Link 
+    to={to} 
+    className="block py-4 pr-4 px-2 text-xl font-extrabold text-slate-800 hover:text-walmart-blue transition-all border-b border-slate-50 relative group" 
+    onClick={onClick}
+  >
+    <div className="flex items-center justify-between">
+       <span className="tracking-tight">{label}</span>
+       <ArrowRight size={16} className="text-slate-300 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
+    </div>
   </Link>
 );
 

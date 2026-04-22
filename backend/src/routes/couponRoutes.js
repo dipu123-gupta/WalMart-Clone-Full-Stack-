@@ -5,6 +5,8 @@ const { authenticate } = require('../middlewares/authMiddleware');
 const { authorize } = require('../middlewares/roleMiddleware');
 const { ROLES } = require('../constants/roles');
 
+router.get('/active', couponController.getPublicCoupons);
+
 router.use(authenticate, authorize(ROLES.ADMIN));
 
 router.get('/', couponController.getAllCoupons);

@@ -32,4 +32,15 @@ const toggleCouponStatus = asyncHandler(async (req, res) => {
   new ApiResponse(200, `Coupon ${coupon.isActive ? 'activated' : 'deactivated'}`, coupon).send(res);
 });
 
-module.exports = { createCoupon, getAllCoupons, deleteCoupon, toggleCouponStatus };
+const getPublicCoupons = asyncHandler(async (req, res) => {
+  const now = new Date();
+  const coupons = await Coupon.find({
+    isActive: true,
+    validFrom: { $lte: now },
+    validTo: { $gte: now }
+  }).select('code description discountType discountValue minOrderAmount').sort({ createdAt: -1 });
+
+  new ApiResponse(200, 'Active coupons fetched', coupons).send(res);
+});
+
+module.exports = { createCoupon, getAllCoupons, deleteCoupon, toggleCouponStatus, getPublicCoupons };

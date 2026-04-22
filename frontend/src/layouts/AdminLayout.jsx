@@ -13,7 +13,9 @@ import {
   Banknote,
   Truck,
   Menu,
-  X
+  X,
+  ArrowLeft,
+  Home
 } from 'lucide-react';
 import { logout } from '@/features/auth/authSlice';
 import toast from 'react-hot-toast';
@@ -113,6 +115,21 @@ const AdminLayout = () => {
             <button className="md:hidden p-2 text-slate-500 hover:bg-slate-100 rounded-md" onClick={() => setIsSidebarOpen(true)}>
               <Menu size={24} />
             </button>
+            <div className="flex items-center gap-1 sm:gap-2">
+               <button 
+                 onClick={() => navigate(-1)} 
+                 className="flex items-center gap-1 px-2 sm:px-3 py-1.5 text-[10px] sm:text-xs font-bold text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all"
+               >
+                 <ArrowLeft size={14} /> <span className="hidden sm:inline">Back</span>
+               </button>
+               <button 
+                 onClick={() => navigate('/')} 
+                 className="flex items-center gap-1 px-2 sm:px-3 py-1.5 text-[10px] sm:text-xs font-bold text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all"
+               >
+                 <Home size={14} /> <span className="hidden sm:inline">Home</span>
+               </button>
+            </div>
+            <div className="h-6 w-px bg-slate-200 mx-1 hidden sm:block"></div>
             <h2 className="text-md md:text-lg font-bold text-slate-800">System Control</h2>
           </div>
           <div className="flex items-center gap-2 md:gap-4">

@@ -23,58 +23,62 @@ const HomePage = () => {
   const [isSubscribing, setIsSubscribing] = useState(false);
 
   const [allProducts, setAllProducts] = useState([]);
+  const [activeCoupons, setActiveCoupons] = useState([]);
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const slides = [
     {
-      title: "EVERYTHING YOU NEED.",
-      subtitle: "High-quality essentials at prices you won't find anywhere else.",
-      image: import.meta.env.VITE_HERO_SLIDE_1 || "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?q=80&w=2000&auto=format&fit=crop",
-      badge: "Spring Collection",
+      title: "EVERYTHING YOU NEED. DELIVERED.",
+      subtitle: "High-quality essentials at prices you won't find anywhere else. Shop our spring collection now.",
+      image: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?q=80&w=2000&auto=format&fit=crop",
+      badge: "Marketplace Special",
       color: "bg-[#0071dc]",
       accent: "text-walmart-yellow",
-      btnText: "Shop All Products",
+      btnText: "Shop Storefront",
       link: "/products"
     },
     {
-      title: "TECH THAT WOWS.",
-      subtitle: "Upgrade your lifestyle with the latest gadgets and electronics.",
-      image: import.meta.env.VITE_HERO_SLIDE_2 || "https://images.unsplash.com/photo-1498049794561-7780e7231661?q=80&w=2000&auto=format&fit=crop",
-      badge: "Tech Savings",
+      title: "NEXT-GEN TECH. TODAY.",
+      subtitle: "Upgrade your lifestyle with the latest gadgets. From noise-cancelling headphones to 4K displays.",
+      image: "https://images.unsplash.com/photo-1498049794561-7780e7231661?q=80&w=2000&auto=format&fit=crop",
+      badge: "Tech Insider",
       color: "bg-slate-900",
       accent: "text-blue-400",
-      btnText: "View Electronics",
+      btnText: "Explore Tech",
       link: "/products?category=electronics"
     },
     {
-      title: "STYLE FOR EVERYONE.",
-      subtitle: "Discover trending styles and wardrobe essentials for all seasons.",
-      image: import.meta.env.VITE_HERO_SLIDE_3 || "https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2000&auto=format&fit=crop",
-      badge: "Fashion Week",
-      color: "bg-purple-900",
+      title: "ELEVATE YOUR STYLE.",
+      subtitle: "Discover trending styles and curated wardrobe essentials for every occasion and season.",
+      image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2000&auto=format&fit=crop",
+      badge: "Fashion Forward",
+      color: "bg-indigo-950",
       accent: "text-pink-400",
-      btnText: "Shop Fashion",
+      btnText: "Shop Wardrobe",
       link: "/products?category=fashion"
     }
   ];
 
+  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length);
+  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 5000);
+    const timer = setInterval(nextSlide, 7000);
     return () => clearInterval(timer);
   }, []);
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [catsRes, featuredRes, allRes] = await Promise.all([
+        const [catsRes, featuredRes, allRes, couponRes] = await Promise.all([
           api.get('/categories'),
           api.get('/products/featured?limit=8'),
-          api.get('/products?limit=12')
+          api.get('/products?limit=12'),
+          api.get('/public/coupons/active')
         ]);
         setCategories(catsRes.data?.data || []);
         setFeaturedProducts(featuredRes.data?.data || []);
         setAllProducts(allRes.data?.data || []);
+        setActiveCoupons(couponRes.data?.data || []);
       } catch (err) {
         console.error('Failed to fetch home data:', err);
       } finally {
@@ -151,67 +155,93 @@ const HomePage = () => {
       </div>
 
       {/* Hero Slider - Pro Style */}
-      <section className="relative h-[500px] md:h-[600px] overflow-hidden">
+      <section className="relative h-[480px] sm:h-[600px] md:h-[700px] overflow-hidden group">
         {slides.map((slide, index) => (
           <div
             key={index}
             className={`absolute inset-0 transition-all duration-1000 ease-in-out transform ${
-              index === currentSlide ? 'opacity-100 scale-100' : 'opacity-0 scale-105 pointer-events-none'
+              index === currentSlide ? 'opacity-100 scale-100 visible' : 'opacity-0 scale-110 invisible'
             }`}
           >
-            {/* Background Image with Overlay */}
-            <div className="absolute inset-0">
-               <img src={slide.image} className="w-full h-full object-cover" alt={slide.title} />
-               <div className={`absolute inset-0 ${slide.color} opacity-60 mix-blend-multiply`}></div>
-               <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
-                  {/* Content Container */}
-            <div className="max-w-7xl mx-auto px-4 h-full flex items-center relative z-10 pt-10 sm:pt-0">
-              <div className="max-w-2xl space-y-4 sm:space-y-8 text-center sm:text-left mx-auto sm:ml-0">
-                 <div className={`inline-block px-4 py-1 rounded-xl font-black text-[9px] sm:text-[10px] uppercase tracking-widest bg-white/20 backdrop-blur-md text-white border border-white/20 animate-slide-up`}>
+            {/* Background Image with Parallax Effect */}
+            <div className="absolute inset-0 overflow-hidden">
+               <img 
+                 src={slide.image} 
+                 className={`w-full h-full object-cover transition-transform duration-[7000ms] ease-out ${index === currentSlide ? 'scale-110' : 'scale-100'}`} 
+                 alt={slide.title} 
+               />
+               <div className={`absolute inset-0 ${slide.color} opacity-40 mix-blend-multiply`}></div>
+               <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/30 to-transparent"></div>
+            </div>
+
+            {/* Content Container */}
+            <div className="max-w-7xl mx-auto px-6 md:px-12 h-full flex items-center relative z-10">
+              <div className="max-w-3xl space-y-6 sm:space-y-10 text-left">
+                 <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full font-bold text-[10px] uppercase tracking-[0.2em] bg-white/10 backdrop-blur-xl text-white border border-white/20 shadow-2xl animate-slide-up`}>
+                    <span className="w-1.5 h-1.5 bg-walmart-yellow rounded-full animate-pulse"></span>
                     {slide.badge}
                  </div>
-                 <div className="space-y-2 sm:space-y-4">
-                    <h1 className="text-4xl sm:text-6xl md:text-8xl font-black leading-tight sm:leading-[0.85] tracking-tighter text-white animate-slide-up" style={{ animationDelay: '100ms' }}>
+                 <div className="space-y-4 sm:space-y-6">
+                    <h1 className="text-4xl sm:text-7xl md:text-[5.5rem] font-black leading-[0.9] tracking-tighter text-white animate-slide-up" style={{ animationDelay: '150ms' }}>
                       {slide.title.split(' ').map((word, i) => (
-                        <span key={i} className={i === slide.title.split(' ').length - 1 ? slide.accent : ''}>
-                          {word}{' '}
+                        <span key={i} className={`inline-block ${i >= slide.title.split(' ').length - 2 ? slide.accent : ''}`}>
+                          {word}&nbsp;
                         </span>
                       ))}
                     </h1>
-                    <p className="text-sm sm:text-lg md:text-xl text-white/80 font-medium max-w-sm mx-auto sm:ml-0 animate-slide-up" style={{ animationDelay: '200ms' }}>
+                    <p className="text-sm sm:text-xl text-white/70 font-medium max-w-lg leading-relaxed animate-slide-up" style={{ animationDelay: '300ms' }}>
                       {slide.subtitle}
                     </p>
                  </div>
-                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4 animate-slide-up justify-center sm:justify-start" style={{ animationDelay: '300ms' }}>
+                 <div className="flex flex-wrap items-center gap-4 sm:gap-6 pt-2 animate-slide-up" style={{ animationDelay: '450ms' }}>
                     <Link 
                       to={slide.link} 
-                      className="bg-walmart-yellow text-slate-900 px-8 sm:px-10 py-3 sm:py-4 rounded-full font-black text-xs sm:text-sm uppercase tracking-widest hover:brightness-110 transition-all shadow-xl shadow-black/20 transform hover:-translate-y-1"
+                      className="group relative overflow-hidden bg-walmart-yellow text-slate-900 px-8 md:px-12 py-4 md:py-5 rounded-full font-black text-xs md:text-sm uppercase tracking-widest transition-all shadow-2xl shadow-walmart-yellow/20 hover:scale-105 active:scale-95"
                     >
-                       {slide.btnText}
+                       <span className="relative z-10">{slide.btnText}</span>
+                       <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity"></div>
                     </Link>
                     <Link 
                       to="/products" 
-                      className="bg-white/20 backdrop-blur-md text-white px-8 sm:px-10 py-3 sm:py-4 rounded-full font-black text-xs sm:text-sm uppercase tracking-widest hover:bg-white/30 transition-all"
+                      className="group flex items-center gap-3 bg-white/5 backdrop-blur-md text-white border border-white/30 px-8 md:px-12 py-4 md:py-5 rounded-full font-black text-xs md:text-sm uppercase tracking-widest hover:bg-white hover:text-slate-900 transition-all shadow-xl"
                     >
                        Explore Deals
+                       <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                     </Link>
                  </div>
               </div>
             </div>
-       </div>
           </div>
         ))}
 
-        {/* Slide Indicators */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-3">
+        {/* Navigation Controls */}
+        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 z-20 px-4 md:px-12 flex justify-between pointer-events-none">
+           <button 
+             onClick={prevSlide}
+             className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-black/20 hover:bg-black/50 backdrop-blur-md text-white flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 pointer-events-auto border border-white/10 -translate-x-4 group-hover:translate-x-0"
+           >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+           </button>
+           <button 
+             onClick={nextSlide}
+             className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-black/20 hover:bg-black/50 backdrop-blur-md text-white flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 pointer-events-auto border border-white/10 translate-x-4 group-hover:translate-x-0"
+           >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+           </button>
+        </div>
+
+        {/* Improved Slide Indicators */}
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex items-center gap-4 bg-black/20 backdrop-blur-xl px-6 py-3 rounded-full border border-white/10">
           {slides.map((_, i) => (
             <button
               key={i}
               onClick={() => setCurrentSlide(i)}
-              className={`h-1.5 rounded-full transition-all duration-500 ${
-                i === currentSlide ? 'w-12 bg-walmart-yellow' : 'w-4 bg-white/30 hover:bg-white/50'
-              }`}
-            />
+              className="group relative h-1"
+            >
+              <div className={`h-1.5 rounded-full transition-all duration-700 ease-out overflow-hidden bg-white/20 ${i === currentSlide ? 'w-16' : 'w-4 hover:w-8'}`}>
+                 <div className={`h-full bg-walmart-yellow transition-all duration-[7000ms] linear ${i === currentSlide ? 'w-full' : 'w-0'}`}></div>
+              </div>
+            </button>
           ))}
         </div>
       </section>
@@ -303,6 +333,59 @@ const HomePage = () => {
               <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/20 rounded-full group-hover:scale-150 transition-transform duration-700"></div>
            </div>
         </section>
+
+        {/* Global Offers & Coupons Section */}
+        {activeCoupons.length > 0 && (
+          <section className="bg-slate-900 rounded-[2.5rem] p-8 md:p-10 text-white overflow-hidden relative group">
+             <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-1000"></div>
+             <div className="relative z-10">
+                <div className="flex items-center justify-between mb-8">
+                   <div>
+                      <h2 className="text-2xl font-black tracking-tight flex items-center gap-2">
+                        <Tag className="text-walmart-yellow" size={24} /> Exclusive Offers
+                      </h2>
+                      <p className="text-slate-400 text-sm mt-1 font-medium">Limited time deals just for you.</p>
+                   </div>
+                </div>
+                
+                <div className="flex overflow-x-auto gap-6 pb-2 no-scrollbar">
+                   {activeCoupons.map((coupon) => (
+                      <div 
+                        key={coupon._id} 
+                        className="shrink-0 w-72 bg-white/10 backdrop-blur-xl border border-white/20 p-6 rounded-3xl flex flex-col justify-between hover:bg-white/20 transition-all cursor-pointer group/card"
+                        onClick={() => {
+                          navigator.clipboard.writeText(coupon.code);
+                          toast.success(`Code ${coupon.code} copied!`);
+                        }}
+                      >
+                         <div>
+                            <div className="flex items-center justify-between mb-4">
+                               <div className="bg-walmart-yellow/20 text-walmart-yellow px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
+                                  {coupon.discountValue}{coupon.discountType === 'percentage' ? '%' : ' OFF'}
+                               </div>
+                               <button className="text-white/40 hover:text-white transition-colors">
+                                  <ArrowRight size={18} />
+                               </button>
+                            </div>
+                            <h3 className="text-lg font-black leading-tight mb-2 uppercase tracking-tighter">{coupon.code}</h3>
+                            <p className="text-xs text-white/60 font-medium line-clamp-2 leading-relaxed">
+                               {coupon.description || `Get ${coupon.discountValue}${coupon.discountType === 'percentage' ? '%' : ' currency'} discount on your orders.`}
+                            </p>
+                         </div>
+                         <div className="mt-8 flex items-center justify-between border-t border-white/10 pt-4">
+                            <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">
+                               Min: {formatCurrency(coupon.minOrderAmount)}
+                            </span>
+                            <span className="text-[10px] font-bold text-walmart-yellow uppercase tracking-widest group-hover/card:underline">
+                               Copy Code
+                            </span>
+                         </div>
+                      </div>
+                   ))}
+                </div>
+             </div>
+          </section>
+        )}
 
         {/* Featured Savings Section */}
         <section className="bg-white rounded-[2.5rem] p-8 md:p-12 border border-slate-100 shadow-sm">

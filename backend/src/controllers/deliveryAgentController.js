@@ -58,6 +58,11 @@ const updateDeliveryStatus = asyncHandler(async (req, res) => {
 
   if (!order) throw ApiError.notFound('Order not found or not assigned to you');
 
+  // If already in requested status, return success (idempotent)
+  if (order.orderStatus === status) {
+    return new ApiResponse(200, 'Status already updated', order).send(res);
+  }
+
   // Validate transition
   const VALID_AGENT_TRANSITIONS = {
     [ORDER_STATUS.PROCESSING]:       [ORDER_STATUS.SHIPPED],

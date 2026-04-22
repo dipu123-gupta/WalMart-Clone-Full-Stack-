@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { placeOrder } from '@/features/orders/orderSlice';
-import { fetchCart } from '@/features/cart/cartSlice';
+import { fetchCart, applyCoupon } from '@/features/cart/cartSlice';
 import api from '@/services/api';
 import { MapPin, CreditCard, Banknote, Plus, ChevronDown, Shield, ArrowRight } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -198,9 +198,36 @@ const CheckoutPage = () => {
             <div className="space-y-2 text-sm">
               <div className="flex justify-between"><span className="text-gray-500">Subtotal</span><span>₹{subtotal.toLocaleString()}</span></div>
               <div className="flex justify-between"><span className="text-gray-500">Shipping</span><span>{shipping === 0 ? <span className="text-green-600">FREE</span> : `₹${shipping}`}</span></div>
-              {couponDiscount > 0 && <div className="flex justify-between text-green-600"><span>Discount</span><span>-₹{couponDiscount}</span></div>}
+              {couponDiscount > 0 && (
+                <div className="flex justify-between text-green-600 font-bold">
+                   <span>Discount ({couponCode})</span>
+                   <span>-₹{couponDiscount.toLocaleString()}</span>
+                </div>
+              )}
               <hr />
               <div className="flex justify-between text-lg font-bold"><span>Total</span><span>₹{Math.max(0, total).toLocaleString()}</span></div>
+            </div>
+
+            {/* Final Coupon Input Area */}
+            <div className="mt-6 pt-5 border-t">
+               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Apply Promo Code</p>
+               <div className="flex gap-2">
+                  <input 
+                    type="text" 
+                    id="checkout-coupon"
+                    placeholder="WMT2026"
+                    className="flex-1 px-4 py-2 text-sm rounded-xl border border-slate-200 outline-none focus:border-walmart-blue uppercase font-bold"
+                  />
+                  <button 
+                    onClick={() => {
+                      const val = document.getElementById('checkout-coupon').value;
+                      if(val) dispatch(applyCoupon(val));
+                    }}
+                    className="px-4 py-2 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-black transition-all"
+                  >
+                    Apply
+                  </button>
+               </div>
             </div>
 
             <button

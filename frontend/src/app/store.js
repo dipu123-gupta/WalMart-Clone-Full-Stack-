@@ -9,6 +9,7 @@ import notificationReducer from '@/features/notifications/notificationSlice';
 import compareReducer from '@/features/compare/compareSlice';
 
 import deliveryReducer from '@/features/delivery/deliverySlice';
+import settingsReducer from '@/features/settings/settingsSlice';
 
 export const store = configureStore({
   reducer: {
@@ -21,6 +22,7 @@ export const store = configureStore({
     notifications: notificationReducer,
     compare: compareReducer,
     delivery: deliveryReducer,
+    settings: settingsReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
